@@ -9,7 +9,7 @@ import { X, ScanLine } from 'lucide-react';
 import QRScanner from './qr-scanner';
 import { Button } from './ui/button';
 import type { Bridge } from '@/lib/bridge-config';
-import { mapLocations } from '@/lib/map-locations';
+import { mapLocations, mapStartingPoints } from '@/lib/map-locations';
 
 const streetMapStyle = {
   version: 8 as const,
@@ -39,6 +39,7 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
   useEffect(() => {
     let cancelled = false;
     let observer: ResizeObserver | undefined;
+    let startingMarker: Marker | undefined;
     setOrigin(window.location.origin);
     setStatus('Loading map…');
     import('maplibre-gl').then(({ Map, Marker, NavigationControl, AttributionControl, LngLatBounds }) => {
@@ -48,6 +49,8 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
         const p = mapLocations[point.pinId];
         bounds.extend([p.longitude, p.latitude]);
       });
+      const startingPoint = mapStartingPoints[bridge.id];
+      if (startingPoint) bounds.extend([startingPoint.longitude, startingPoint.latitude]);
       const instance = new Map({
         container: container.current,
         style: streetMapStyle,
@@ -55,6 +58,13 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
         attributionControl: false,
       });
       map.current = instance;
+      if (startingPoint) {
+        const label = document.createElement('div');
+        label.className = 'map-starting-point';
+        label.textContent = 'STARTING POINT';
+        startingMarker = new Marker({ element: label, anchor: 'top' })
+          .setLngLat([startingPoint.longitude, startingPoint.latitude]).addTo(instance);
+      }
       instance.dragRotate.disable();
       instance.touchZoomRotate.disableRotation();
       instance.addControl(new NavigationControl({ showCompass: false }), 'top-right');
@@ -90,6 +100,7 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
     return () => {
       cancelled = true;
       observer?.disconnect();
+      startingMarker?.remove();
       markers.current.forEach(({ marker }) => marker.remove());
       markers.current = [];
       map.current?.remove();

@@ -96,6 +96,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset:
 
 
 /* No rectangular focus marker over circular map pins. */
+.map-starting-point { pointer-events: none; padding: 10px 14px; border-radius: 18px; border: 2px solid white; background: #173c4d; color: white; box-shadow: 0 3px 10px #173c4d30; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.map-starting-point::before { content: ''; position: absolute; top: -7px; left: calc(50% - 5px); width: 10px; height: 10px; background: #173c4d; border-top: 2px solid white; border-left: 2px solid white; transform: rotate(45deg); }
 .map-pin:focus-visible { outline: none; }
 .map-pin:focus-visible > span { outline: 2px solid #111; outline-offset: 3px; }
 button, input, select, textarea { font-family: inherit; }
