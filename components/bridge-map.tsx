@@ -11,18 +11,19 @@ import { Button } from './ui/button';
 import type { Bridge } from '@/lib/bridge-config';
 import { mapLocations } from '@/lib/map-locations';
 
-const openStreetMapStyle = {
+const cartoLightStyle = {
   version: 8 as const,
   sources: {
-    openStreetMap: {
+    cartoLight: {
       type: 'raster' as const,
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'],
       tileSize: 256,
-      attribution: '&copy; OpenStreetMap contributors',
+      maxzoom: 20,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     },
   },
   layers: [
-    { id: 'openStreetMap', type: 'raster' as const, source: 'openStreetMap' },
+    { id: 'cartoLight', type: 'raster' as const, source: 'cartoLight' },
   ],
 };
 
@@ -51,7 +52,7 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
       });
       const instance = new Map({
         container: container.current,
-        style: openStreetMapStyle,
+        style: cartoLightStyle,
         center: bounds.getCenter(), zoom: 16, minZoom: 11, maxZoom: 20,
         attributionControl: false,
       });
@@ -60,7 +61,11 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
       instance.touchZoomRotate.disableRotation();
       instance.addControl(new NavigationControl({ showCompass: false }), 'top-right');
       instance.addControl(new AttributionControl({ compact: false }), 'bottom-right');
-      const fit = () => instance.fitBounds(bounds, { padding: { top: 120, bottom: 150, left: 70, right: 70 }, maxZoom: 17, duration: 0 });
+      const fit = () => {
+        instance.fitBounds(bounds, { padding: { top: 120, bottom: 150, left: 70, right: 70 }, maxZoom: 17, duration: 0 });
+        // Allow one zoom level of context beyond the initial bridge overview.
+        instance.setMinZoom(Math.max(11, instance.getZoom() - 1));
+      };
       instance.on('load', () => { if (!cancelled) { setStatus(''); fit(); } });
       instance.on('error', () => { if (!cancelled) setStatus('Some map details could not load. Check your connection and retry.'); });
       markers.current = bridge.spots.map(point => {
