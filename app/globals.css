@@ -1,4 +1,10 @@
 @import 'tailwindcss';
+/* Vector map controls stay clear of the title, QR button and attribution. */
+.vector-map-screen .maplibregl-ctrl-top-right { top: 105px; right: 12px; }
+.vector-map-screen .maplibregl-ctrl-attrib { font-size: 11px; max-width: 100%; }
+.vector-map-screen .maplibregl-ctrl-bottom-right { bottom: env(safe-area-inset-bottom); }
+.vector-map-screen .maplibregl-marker { width: 0; height: 0; }
+.vector-point-overlay { left: 16px; right: 16px; bottom: 112px; margin: auto; width: min(350px, calc(100% - 32px)); }
 @font-face { font-family: "Pretendard Variable"; font-style: normal; font-weight: 45 920; font-display: swap; src: url("/fonts/PretendardVariable.woff2") format("woff2"); }
 @theme inline {
   --color-background: #e9e8e4; --color-foreground: #232523; --color-primary: #292c29;
