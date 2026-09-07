@@ -11,6 +11,21 @@ import { Button } from './ui/button';
 import type { Bridge } from '@/lib/bridge-config';
 import { mapLocations } from '@/lib/map-locations';
 
+const openStreetMapStyle = {
+  version: 8 as const,
+  sources: {
+    openStreetMap: {
+      type: 'raster' as const,
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap contributors',
+    },
+  },
+  layers: [
+    { id: 'openStreetMap', type: 'raster' as const, source: 'openStreetMap' },
+  ],
+};
+
 export default function BridgeMap({ bridge, completed }: { bridge: Bridge; completed: string[] }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapInstance | null>(null);
@@ -36,7 +51,7 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
       });
       const instance = new Map({
         container: container.current,
-        style: 'https://tiles.openfreemap.org/styles/liberty',
+        style: openStreetMapStyle,
         center: bounds.getCenter(), zoom: 16, minZoom: 11, maxZoom: 20,
         attributionControl: false,
       });
