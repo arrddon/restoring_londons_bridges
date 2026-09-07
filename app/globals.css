@@ -165,3 +165,7 @@ button, input, select, textarea { font-family: inherit; }
   .guide-sheet { margin: 0; box-shadow: none; break-after: page; break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .guide-sheet:last-child { break-after: auto; }
 }
+.guide-map-tiles { filter: grayscale(1) contrast(.8) brightness(1.15); }
+.guide-back header, .guide-map-note { background: #fffffff0; padding: 4mm; }
+.guide-back header { left: 14mm; }
+.guide-map-note { left: 14mm; right: 14mm; }

@@ -12,39 +12,47 @@ const steps = [
 ];
 
 function GuideMap() {
-  const project = (p: { latitude: number; longitude: number }) => ({
-    x: 265 + (p.longitude + .1669) * 95000,
-    y: 85 + (51.48365 - p.latitude) * 215000,
-  });
+  // Standard OSM raster images also remain visible in browser print output.
+  const zoom = 17;
+  const scale = 1.6;
+  const tileSize = 256;
+  const worldSize = tileSize * 2 ** zoom;
+  const world = (p: { latitude: number; longitude: number }) => {
+    const sin = Math.sin(p.latitude * Math.PI / 180);
+    return {
+      x: (p.longitude + 180) / 360 * worldSize,
+      y: (.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * worldSize,
+    };
+  };
+  const center = world({ latitude: 51.48235, longitude: -.16675 });
+  const left = center.x - 280 / scale;
+  const top = center.y - 396 / scale;
+  const project = (p: { latitude: number; longitude: number }) => {
+    const position = world(p);
+    return { x: (position.x - left) * scale, y: (position.y - top) * scale };
+  };
+  const tiles = [];
+  for (let y = Math.floor(top / tileSize); y <= Math.floor((top + 792 / scale) / tileSize); y++) {
+    for (let x = Math.floor(left / tileSize); x <= Math.floor((left + 560 / scale) / tileSize); x++) {
+      tiles.push(<image key={`${x}-${y}`} href={`https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`}
+        x={(x * tileSize - left) * scale} y={(y * tileSize - top) * scale}
+        width={tileSize * scale} height={tileSize * scale} />);
+    }
+  }
   const start = project(mapStartingPoints.AlbertBridge);
   const points = Array.from({ length: 5 }, (_, i) => project(mapLocations[`A0${i + 1}`]));
-  return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label="Schematic map of Albert Bridge. Start at the south entrance and walk north past points 05 to 01. North is up.">
-    <rect width="560" height="792" fill="#fff" /><g transform="translate(0 65)">
-    <path d="M0 125 L560 60 V480 L0 555Z" fill="none" />
-    <path d="M0 125 L560 60 M0 555 L560 480" fill="none" stroke="#888" strokeWidth="0.8" />
-    <path d="M190 45 L340 610" stroke="white" strokeWidth="42" />
-    <path d="M190 45 L340 610" stroke="#111" strokeWidth="1.5" />
-    <text x="28" y="94" fontSize="13" letterSpacing="1">CHELSEA EMBANKMENT</text>
-    <text x="28" y="365" fontSize="17" letterSpacing="2">RIVER THAMES</text>
-    <text x="395" y="550" fontSize="13">BATTERSEA</text>
-    <text x="395" y="568" fontSize="13">PARK</text>
-    <text x="35" y="608" fontSize="13" letterSpacing="1">ANHALT ROAD</text>
-    <text x="290" y="315" fontSize="13" transform="rotate(75 290 315)" letterSpacing="2">ALBERT BRIDGE</text>
-    <path d={`M${start.x} ${start.y} ${[...points].reverse().map(p => `L${p.x} ${p.y}`).join(' ')}`} fill="none" stroke="#111" strokeWidth="1.5" strokeDasharray="4 6" />
+  return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label="OpenStreetMap of Albert Bridge with five experience points and the starting point at the south entrance. North is up.">
+    <g className="guide-map-tiles">{tiles}</g>
     {points.map((p, i) => <g key={i}>
       <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
       <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{String(i + 1).padStart(2, '0')}</text>
-      <path d={`M${p.x + 19} ${p.y} h48`} stroke="#111" />
-      <text x={p.x + 76} y={p.y + 5} fontSize="14" fontWeight="600">POINT {String(i + 1).padStart(2, '0')}</text>
     </g>)}
-    <circle cx={start.x} cy={start.y} r="9" fill="#111" />
-    <path d={`M${start.x - 12} ${start.y} h-90`} stroke="#111" />
-    <text x={start.x - 110} y={start.y + 5} textAnchor="end" fontSize="18" fontWeight="700">START</text>
-    <g transform="translate(500 20)"><path d="M0 39 V10 M-5 18 L0 8 L5 18" fill="none" stroke="#111" strokeWidth="1.2" /><text y="0" textAnchor="middle" fontSize="13">N</text></g>
-    </g>
+    <circle cx={start.x} cy={start.y} r="6" fill="#111" stroke="white" strokeWidth="2" />
+    <path d={`M${start.x - 8} ${start.y} h-24`} stroke="#111" strokeWidth="1.5" />
+    <rect x={start.x - 110} y={start.y - 16} width="78" height="32" rx="2" fill="white" stroke="#111" />
+    <text x={start.x - 71} y={start.y + 5} textAnchor="middle" fontSize="16" fontWeight="700">START</text>
   </svg>;
 }
-
 export default function BridgeGuide() {
   const [url, setUrl] = useState('');
   useEffect(() => { setUrl(`${window.location.origin}/AlbertBridge`); }, []);
@@ -57,7 +65,7 @@ export default function BridgeGuide() {
     <article className="guide-sheet guide-back" aria-label="Guide 2: Map and starting point">
       <header><h2>EXPLORE THE BRIDGE</h2><p>Albert Bridge, London</p></header>
       <GuideMap />
-      <div className="guide-map-note"><p>At each point, look for the QR marker<br />to continue the experience.</p><small>Schematic map · Not to scale</small></div>
+      <div className="guide-map-note"><p>At each point, look for the QR marker<br />to continue the experience.</p><small>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</small></div>
     </article>
   </div>;
 }
