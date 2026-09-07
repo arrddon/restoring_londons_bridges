@@ -7,6 +7,7 @@ const local = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 // Static deployment shares all map/AR components with the local Vinext app.
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: { exclude: ['maplibre-gl'] },
   resolve: { alias: {
     'next/link': local('./web/navigation.tsx'),
     'next/navigation': local('./web/navigation.tsx'),
