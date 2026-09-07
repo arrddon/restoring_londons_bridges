@@ -11,21 +11,8 @@ import { Button } from './ui/button';
 import type { Bridge } from '@/lib/bridge-config';
 import { mapLocations } from '@/lib/map-locations';
 
-const cartoLightStyle = {
-  version: 8 as const,
-  sources: {
-    cartoLight: {
-      type: 'raster' as const,
-      tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'],
-      tileSize: 256,
-      maxzoom: 20,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    },
-  },
-  layers: [
-    { id: 'cartoLight', type: 'raster' as const, source: 'cartoLight' },
-  ],
-};
+// Public vector basemap with labels; no API key or account required.
+const lightMapStyle = 'https://tiles.openfreemap.org/styles/positron';
 
 export default function BridgeMap({ bridge, completed }: { bridge: Bridge; completed: string[] }) {
   const container = useRef<HTMLDivElement>(null);
@@ -52,7 +39,7 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
       });
       const instance = new Map({
         container: container.current,
-        style: cartoLightStyle,
+        style: lightMapStyle,
         center: bounds.getCenter(), zoom: 16, minZoom: 11, maxZoom: 20,
         attributionControl: false,
       });
