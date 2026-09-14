@@ -65,7 +65,13 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
         // Allow one zoom level of context beyond the initial bridge overview.
         instance.setMinZoom(Math.max(11, instance.getZoom() - 1));
       };
-      instance.on('load', () => { if (!cancelled) { setStatus(''); fit(); } });
+      instance.on('load', () => {
+        if (cancelled) return;
+        setStatus(''); fit();
+        const qrSpot = qrSpotId ? bridge.spots.find(point => point.id === qrSpotId) : undefined;
+        const qrLocation = qrSpot ? mapLocations[qrSpot.pinId] : undefined;
+        if (qrLocation) instance.jumpTo({ center: [qrLocation.longitude, qrLocation.latitude], zoom: 18 });
+      });
       instance.on('error', () => { if (!cancelled) setStatus('Some map details could not load. Check your connection and retry.'); });
       markers.current = bridge.spots.map((point, index) => {
         const p = mapLocations[point.pinId];
@@ -104,7 +110,7 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
       map.current?.remove();
       map.current = null;
     };
-  }, [bridge, retry]);
+  }, [bridge, retry, qrSpotId]);
   useEffect(() => {
     markers.current.forEach(({ id, destination, button }) => {
       button.classList.toggle('selected', id === selected);
@@ -130,4 +136,3 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
     </section>}
   </section>;
 }
-

@@ -192,7 +192,7 @@ button, input, select, textarea { font-family: inherit; }
 .point-qr-sheet article small { overflow-wrap: anywhere; }
 @media print { .point-qr-sheet { padding: 10mm; } .point-qr-sheet header a { display: none; } }
 
-/* One minimal, full-size A4 marker per /Guide-A01 … /Guide-A05 route. */
+/* One minimal, full-size A4 marker per /AlbertBridge/Guide-A01 … Guide-A05 route. */
 .field-qr-guide { width: 210mm; height: 297mm; margin: 0 auto; padding: 22mm 20mm 18mm; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: #fff; color: #111; }
 .field-qr-guide header { align-self: stretch; border-top: 1px solid #111; padding-top: 8mm; }
 .field-qr-guide h1 { margin: 0; font-size: 34pt; font-weight: 600; line-height: .96; letter-spacing: -.045em; }
@@ -200,4 +200,3 @@ button, input, select, textarea { font-family: inherit; }
 .field-qr-guide > svg { width: 158mm; height: 158mm; flex: none; }
 @media screen and (max-width: 800px) { .field-qr-guide { transform-origin: top left; } }
 @media print { .field-qr-guide { margin: 0; break-after: page; } }
-

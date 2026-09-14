@@ -30,11 +30,11 @@ function useCompletion() {
 
 export default function BridgeApp({ path }: { path: string[] }) {
   const { completed, complete, storageError } = useCompletion();
-  const fieldGuideId = path.length === 1 ? /^Guide-(A0[1-5])$/i.exec(path[0])?.[1].toUpperCase() : undefined;
-  const fieldGuideSpot = bridges.find(b => b.id === 'AlbertBridge')?.spots.find(s => s.pinId === fieldGuideId);
-  if (fieldGuideSpot) return <FieldQRGuide spot={fieldGuideSpot} />;
   const configuredBridge = bridges.find(b => b.id === path[0]);
   const bridge = configuredBridge;
+  const fieldGuideId = bridge?.id === 'AlbertBridge' && path.length === 2 ? /^Guide-(A0[1-5])$/i.exec(path[1])?.[1].toUpperCase() : undefined;
+  const fieldGuideSpot = bridge?.spots.find(s => s.pinId === fieldGuideId);
+  if (fieldGuideSpot) return <FieldQRGuide spot={fieldGuideSpot} />;
   const spot = bridge?.spots.find(s => s.pinId === path[1] || s.id === path[1]);
   if (bridge?.id === 'AlbertBridge' && path.length === 2 && path[1] === 'Guide') return <BridgeGuide />;
   if (bridge?.id === 'AlbertBridge' && path.length === 2 && path[1] === 'QRCodes') return <PointQRCodes bridge={bridge} />;
@@ -48,7 +48,6 @@ export default function BridgeApp({ path }: { path: string[] }) {
     {storageError && <p className="notice" role="status">Completion cannot be saved in this browser.</p>}
   </main>;
 }
-
 
 
 
