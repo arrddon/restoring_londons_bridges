@@ -13,7 +13,6 @@ function App() {
   const legacy = { 'bridge-a': 'AlbertBridge', 'bridge-b': 'HammersmithBridge' }[path[0]];
   const redirect = !path.length ? '/AlbertBridge' : legacy ? `/${[legacy, ...path.slice(1)].map(encodeURIComponent).join('/')}` : null;
   useEffect(() => { if (redirect) router.replace(redirect); }, [redirect, router]);
-  useEffect(() => { document.title = 'Albert Bridge'; }, [pathname]);
   return redirect ? null : <BridgeApp path={path} />;
 }
 createRoot(document.getElementById('root')!).render(<App />);

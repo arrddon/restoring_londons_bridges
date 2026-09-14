@@ -1,5 +1,5 @@
 export type Spot = {
-  id: string; bridgeId: string; title: string; description: string;
+  id: string; bridgeId: string; title: string;
   pinId: string; assetType: '3d' | 'video' | 'image';
   sourceAssets: { model: string | null; audio: string | null; video: string | null; image: string | null };
   contentDurationSeconds: number | null;
@@ -12,20 +12,20 @@ export type Bridge = { id: string; title: string; mapPath: string; mapWidth: num
 // Normalized image coordinates (0–1). Positions remain provisional.
 const positions = [{ x: .275, y: .235 }, { x: .40, y: .31 }, { x: .52, y: .38 }, { x: .65, y: .455 }, { x: .775, y: .53 }];
 const albertPositions = [{ x: .405, y: .25 }, { x: .465, y: .375 }, { x: .525, y: .50 }, { x: .585, y: .625 }, { x: .645, y: .75 }];
-const content: Record<string, { title: string; description: string }[]> = {
+const content: Record<string, { title: string }[]> = {
   AlbertBridge: [
-    { title: 'The Damaged Rocker', description: '(A01 description text)' },
-    { title: 'Bazalgette', description: '(A02 description text)' },
-    { title: 'Timber and Ashphalt', description: '(A03 description text)' },
-    { title: 'Stop Marching Sign', description: '(A04 description text)' },
-    { title: 'Lights on the Bridge', description: '(A05 description text)' },
+    { title: 'The Damaged Rocker' },
+    { title: 'Bazalgette' },
+    { title: 'Timber and Ashphalt' },
+    { title: 'Stop Marching Sign' },
+    { title: 'Lights on the Bridge' },
   ],
   HammersmithBridge: [
-    { title: 'The Pedestal Crack', description: '' },
-    { title: 'Harrods Furniture Depository', description: '' },
-    { title: 'Oxford Cambridge Boat Race', description: '' },
-    { title: "Bazalgette's London", description: '' },
-    { title: 'Coat of Arms', description: '' },
+    { title: 'The Pedestal Crack' },
+    { title: 'Harrods Furniture Depository' },
+    { title: 'Oxford Cambridge Boat Race' },
+    { title: "Bazalgette's London" },
+    { title: 'Coat of Arms' },
   ],
 };
 export const bridges: Bridge[] = [
@@ -43,7 +43,7 @@ export const bridges: Bridge[] = [
   },
   contentDurationSeconds: null,
   title: content[bridge.id]?.[i]?.title ?? `Point ${String(i + 1).padStart(2, '0')}`,
-  description: content[bridge.id]?.[i]?.description ?? '', position,
+  position,
   // Public point URLs are encoded directly into the physical QR markers.
   destination: `/${bridge.id}/${bridge.id === 'AlbertBridge' ? 'A' : 'H'}${String(i + 1).padStart(2, '0')}`,
   modelPath: bridge.id === 'AlbertBridge' ? [

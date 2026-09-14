@@ -35,12 +35,12 @@ test('Albert Bridge uses surveyed pins and starts at A04', () => {
 
 test('Hammersmith Bridge uses the supplied titles and surveyed coordinates', () => {
   const hammersmith = bridges.find(bridge => bridge.id === 'HammersmithBridge');
-  assert.deepEqual(hammersmith.spots.map(spot => [spot.pinId, spot.title, spot.description]), [
-    ['H01', 'The Pedestal Crack', ''],
-    ['H02', 'Harrods Furniture Depository', ''],
-    ['H03', 'Oxford Cambridge Boat Race', ''],
-    ['H04', "Bazalgette's London", ''],
-    ['H05', 'Coat of Arms', ''],
+  assert.deepEqual(hammersmith.spots.map(spot => [spot.pinId, spot.title]), [
+    ['H01', 'The Pedestal Crack'],
+    ['H02', 'Harrods Furniture Depository'],
+    ['H03', 'Oxford Cambridge Boat Race'],
+    ['H04', "Bazalgette's London"],
+    ['H05', 'Coat of Arms'],
   ]);
   assert.deepEqual(mapLocations.H01, { latitude: 51.489214, longitude: -0.229270 });
   assert.deepEqual(mapLocations.H02, { latitude: 51.488915, longitude: -0.229597 });

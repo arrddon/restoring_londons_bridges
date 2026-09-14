@@ -9,6 +9,7 @@ import FieldQRGuide from '@/components/field-qr-guide';
 import { bridges, type Spot } from '@/lib/bridge-config';
 import { readCompletion, writeCompletion } from '@/lib/completion-storage';
 import { readQRAccess, writeQRAccess } from '@/lib/qr-access-storage';
+import { pageTitle } from '@/lib/page-title';
 
 function useCompletion() {
   const [completed, setCompleted] = useState<string[]>([]);
@@ -48,6 +49,8 @@ function useQRAccess(scannedSpot?: Spot) {
 
 export default function BridgeApp({ path }: { path: string[] }) {
   const { completed, complete, storageError } = useCompletion();
+  const title = pageTitle(path, bridges);
+  useEffect(() => { document.title = title; }, [title]);
   const configuredBridge = bridges.find(b => b.id === path[0]);
   const bridge = configuredBridge;
   const fieldGuideId = bridge && path.length === 2 ? /^Guide-([AH]0[1-5])$/i.exec(path[1])?.[1].toUpperCase() : undefined;
