@@ -136,7 +136,7 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
     {scanning && <QRScanner onClose={() => setScanning(false)} onScan={path => router.push(path)} />}
     {spot && <section className="point-overlay vector-point-overlay" aria-label={'Selected ' + spot.title}>
       <Button variant="ghost" className="close-point icon-button" aria-label="Close selected point" onClick={() => { markers.current.find(m => m.id === selected)?.button.focus(); resetView.current(); }}><X /></Button>
-      <div className="point-copy"><h2>{spot.title}</h2><p>{spot.description}</p></div>
+      <div className="point-copy"><h2>{spot.title}</h2>{spot.description && <p>{spot.description}</p>}</div>
       <div className="point-actions">{qrSpotId === spot.id
         ? <Link className="enter-link" href={`${spot.destination}/ar`}>ENTER AR</Link>
         : <Button className="scan-required-button" onClick={() => setScanning(true)}><ScanLine size={20} /> SCAN QR TO ENTER AR</Button>}

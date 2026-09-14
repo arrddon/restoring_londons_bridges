@@ -32,12 +32,12 @@ export default function BridgeApp({ path }: { path: string[] }) {
   const { completed, complete, storageError } = useCompletion();
   const configuredBridge = bridges.find(b => b.id === path[0]);
   const bridge = configuredBridge;
-  const fieldGuideId = bridge?.id === 'AlbertBridge' && path.length === 2 ? /^Guide-(A0[1-5])$/i.exec(path[1])?.[1].toUpperCase() : undefined;
+  const fieldGuideId = bridge && path.length === 2 ? /^Guide-([AH]0[1-5])$/i.exec(path[1])?.[1].toUpperCase() : undefined;
   const fieldGuideSpot = bridge?.spots.find(s => s.pinId === fieldGuideId);
-  if (fieldGuideSpot) return <FieldQRGuide spot={fieldGuideSpot} />;
+  if (bridge && fieldGuideSpot) return <FieldQRGuide bridge={bridge} spot={fieldGuideSpot} />;
   const spot = bridge?.spots.find(s => s.pinId === path[1] || s.id === path[1]);
-  if (bridge?.id === 'AlbertBridge' && path.length === 2 && path[1] === 'Guide') return <BridgeGuide />;
-  if (bridge?.id === 'AlbertBridge' && path.length === 2 && path[1] === 'QRCodes') return <PointQRCodes bridge={bridge} />;
+  if (bridge && path.length === 2 && path[1] === 'Guide') return <BridgeGuide bridge={bridge} />;
+  if (bridge && path.length === 2 && path[1] === 'QRCodes') return <PointQRCodes bridge={bridge} />;
   const arRoute = path.length === 3 && path[2] === 'ar' && spot;
   const pointRoute = path.length === 2 && spot;
   const invalid = !bridge || path.length > 3 || (path.length > 1 && !pointRoute && !arRoute);
@@ -48,6 +48,5 @@ export default function BridgeApp({ path }: { path: string[] }) {
     {storageError && <p className="notice" role="status">Completion cannot be saved in this browser.</p>}
   </main>;
 }
-
 
 

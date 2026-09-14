@@ -6,15 +6,14 @@ export const mapLocations: Record<string, { latitude: number; longitude: number 
   A03: { latitude: 51.481832, longitude: -0.166397 },
   A04: { latitude: 51.481308, longitude: -0.166309 },
   A05: { latitude: 51.482714, longitude: -0.166838 },
-  H01: { latitude: 51.48910, longitude: -0.22955 },
-  H02: { latitude: 51.48865, longitude: -0.22980 },
-  H03: { latitude: 51.48820, longitude: -0.23005 },
-  H04: { latitude: 51.48775, longitude: -0.23030 },
-  H05: { latitude: 51.48730, longitude: -0.23055 },
+  H01: { latitude: 51.489214, longitude: -0.229270 },
+  H02: { latitude: 51.488915, longitude: -0.229597 },
+  H03: { latitude: 51.488470, longitude: -0.230068 },
+  H04: { latitude: 51.487866, longitude: -0.230675 },
+  H05: { latitude: 51.487487, longitude: -0.231072 },
 };
 
 // A04 (Stop Marching Sign) is also the Albert Bridge starting point.
 export const mapStartingPoints: Record<string, { latitude: number; longitude: number }> = {
   AlbertBridge: mapLocations.A04,
 };
-

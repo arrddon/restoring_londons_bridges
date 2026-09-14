@@ -33,6 +33,22 @@ test('Albert Bridge uses surveyed pins and starts at A04', () => {
   assert.equal(a04.modelPath, 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789370699/A04_new_jiqjrc.glb');
 });
 
+test('Hammersmith Bridge uses the supplied titles and surveyed coordinates', () => {
+  const hammersmith = bridges.find(bridge => bridge.id === 'HammersmithBridge');
+  assert.deepEqual(hammersmith.spots.map(spot => [spot.pinId, spot.title, spot.description]), [
+    ['H01', 'The Pedestal Crack', ''],
+    ['H02', 'Harrods Furniture Depository', ''],
+    ['H03', 'Oxford Cambridge Boat Race', ''],
+    ['H04', "Bazalgette's London", ''],
+    ['H05', 'Coat of Arms', ''],
+  ]);
+  assert.deepEqual(mapLocations.H01, { latitude: 51.489214, longitude: -0.229270 });
+  assert.deepEqual(mapLocations.H02, { latitude: 51.488915, longitude: -0.229597 });
+  assert.deepEqual(mapLocations.H03, { latitude: 51.488470, longitude: -0.230068 });
+  assert.deepEqual(mapLocations.H04, { latitude: 51.487866, longitude: -0.230675 });
+  assert.deepEqual(mapLocations.H05, { latitude: 51.487487, longitude: -0.231072 });
+});
+
 test('completion persists and never crosses bridges or spots', () => {
   const values = new Map();
   const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
@@ -50,4 +66,3 @@ test('blocked or corrupt storage does not crash the experience', () => {
   assert.equal(writeCompletion(blocked, 'a', 's'), false);
   assert.equal(readCompletion({ getItem: () => '{corrupted}' }, 'a', 's'), false);
 });
-

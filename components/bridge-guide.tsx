@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import type { Bridge } from '@/lib/bridge-config';
 import { mapLocations, mapStartingPoints } from '@/lib/map-locations';
 
 const steps = [
@@ -11,7 +12,7 @@ const steps = [
   ['DISCOVER & LISTEN', 'Point your camera towards the object as it appears, and listen to its story.'],
 ];
 
-function GuideMap() {
+function GuideMap({ bridge }: { bridge: Bridge }) {
   // Standard OSM raster images also remain visible in browser print output.
   const zoom = 17;
   const scale = 1.6;
@@ -24,7 +25,11 @@ function GuideMap() {
       y: (.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * worldSize,
     };
   };
-  const center = world({ latitude: 51.48235, longitude: -.16675 });
+  const coordinates = bridge.spots.map(point => mapLocations[point.pinId]);
+  const center = world({
+    latitude: coordinates.reduce((sum, point) => sum + point.latitude, 0) / coordinates.length,
+    longitude: coordinates.reduce((sum, point) => sum + point.longitude, 0) / coordinates.length,
+  });
   const left = center.x - 280 / scale;
   const top = center.y - 396 / scale;
   const project = (p: { latitude: number; longitude: number }) => {
@@ -39,33 +44,35 @@ function GuideMap() {
         width={tileSize * scale} height={tileSize * scale} />);
     }
   }
-  const start = project(mapStartingPoints.AlbertBridge);
-  const points = Array.from({ length: 5 }, (_, i) => project(mapLocations[`A0${i + 1}`]));
-  return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label="OpenStreetMap of Albert Bridge with five experience points and the starting point at A04. North is up.">
+  const startingCoordinate = mapStartingPoints[bridge.id];
+  const start = startingCoordinate ? project(startingCoordinate) : undefined;
+  const points = bridge.spots.map(point => ({ ...project(mapLocations[point.pinId]), pinId: point.pinId }));
+  return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label={`OpenStreetMap of ${bridge.title} with five experience points. North is up.`}>
     <g className="guide-map-tiles">{tiles}</g>
-    {points.map((p, i) => <g key={i}>
+    {points.map(p => <g key={p.pinId}>
       <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
-      <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{String(i + 1).padStart(2, '0')}</text>
+      <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{p.pinId.slice(1)}</text>
     </g>)}
-    <path d={`M${start.x - 20} ${start.y} h-12`} stroke="#111" strokeWidth="1.5" />
-    <rect x={start.x - 110} y={start.y - 16} width="78" height="32" rx="2" fill="white" stroke="#111" />
-    <text x={start.x - 71} y={start.y + 5} textAnchor="middle" fontSize="16" fontWeight="700">START</text>
+    {start && <>
+      <path d={`M${start.x - 20} ${start.y} h-12`} stroke="#111" strokeWidth="1.5" />
+      <rect x={start.x - 110} y={start.y - 16} width="78" height="32" rx="2" fill="white" stroke="#111" />
+      <text x={start.x - 71} y={start.y + 5} textAnchor="middle" fontSize="16" fontWeight="700">START</text>
+    </>}
   </svg>;
 }
-export default function BridgeGuide() {
+export default function BridgeGuide({ bridge }: { bridge: Bridge }) {
   const [url, setUrl] = useState('');
-  useEffect(() => { setUrl(`${window.location.origin}/AlbertBridge`); }, []);
+  useEffect(() => { setUrl(`${window.location.origin}/${bridge.id}`); }, [bridge.id]);
   return <div className="guide-document">
     <article className="guide-sheet guide-front" aria-label="Guide 1: Experience instructions">
-      <header><div className="guide-kicker">ALBERT BRIDGE, LONDON</div><h1>RESTORING<br />LONDON’S<br />BRIDGES</h1><p className="guide-intro">An AR journey through the hidden structures<br />and stories of Albert Bridge.</p></header>
+      <header><div className="guide-kicker">{bridge.title.toUpperCase()}, LONDON</div><h1>RESTORING<br />LONDON’S<br />BRIDGES</h1><p className="guide-intro">An AR journey through the hidden structures<br />and stories of {bridge.title}.</p></header>
       <section className="guide-instructions"><h2>HOW TO EXPLORE</h2><ol>{steps.map(([title, instruction], i) => <li key={title}><img src={`/guide/${i + 1}.png`} alt="" /><div><span className="guide-step-number">0{i + 1}</span><h3>{title}</h3><p>{instruction}</p></div></li>)}</ol></section>
       <footer className="guide-front-footer"><div><strong>BEGIN HERE</strong><p>Scan to open the map.</p><small>Turn over to explore the map →</small></div>{url && <QRCodeSVG value={url} size={96} marginSize={4} level="M" />}</footer>
     </article>
     <article className="guide-sheet guide-back" aria-label="Guide 2: Map and starting point">
-      <header><h2>EXPLORE THE BRIDGE</h2><p>Albert Bridge, London</p></header>
-      <GuideMap />
+      <header><h2>EXPLORE THE BRIDGE</h2><p>{bridge.title}, London</p></header>
+      <GuideMap bridge={bridge} />
       <div className="guide-map-note"><p>At each point, look for the QR marker<br />to continue the experience.</p><small>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</small></div>
     </article>
   </div>;
 }
-

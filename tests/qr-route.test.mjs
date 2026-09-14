@@ -9,6 +9,7 @@ test('printable field QR codes contain a directly openable public URL', () => {
 test('compact field QR identifiers open their bridge point URL', () => {
   assert.equal(pointPathFromQR('A01', 'https://restoring-londons-bridges.vercel.app'), '/AlbertBridge/A01');
   assert.equal(pointPathFromQR(' a05 ', 'https://restoring-londons-bridges.vercel.app'), '/AlbertBridge/A05');
+  assert.equal(pointPathFromQR('H03', 'https://restoring-londons-bridges.vercel.app'), '/HammersmithBridge/H03');
 });
 
 test('full point URLs remain compatible and unrelated QR codes are rejected', () => {

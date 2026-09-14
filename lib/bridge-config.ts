@@ -21,9 +21,11 @@ const content: Record<string, { title: string; description: string }[]> = {
     { title: 'Lights on the Bridge', description: '(A05 description text)' },
   ],
   HammersmithBridge: [
-    { title: 'The Pedestal Crack', description: 'Examine the cracks identified around the bridge pedestal through inspection imagery taken from the structure.' },
-    // The supplied table ends at “restoring”; retain its supplied wording.
-    { title: 'The Engineering Challenge', description: 'Explore how the damaged pedestal and surrounding bridge structure became part of the wider engineering challenge of restoring' },
+    { title: 'The Pedestal Crack', description: '' },
+    { title: 'Harrods Furniture Depository', description: '' },
+    { title: 'Oxford Cambridge Boat Race', description: '' },
+    { title: "Bazalgette's London", description: '' },
+    { title: 'Coat of Arms', description: '' },
   ],
 };
 export const bridges: Bridge[] = [
@@ -63,4 +65,3 @@ export const bridges: Bridge[] = [
   modelSizeMeters: .8, videoWidthMeters: 1.2,
   scale: 1, rotation: [0, 0, 0] as [number, number, number],
 })) }));
-
