@@ -27,6 +27,7 @@ const streetMapStyle = {
 export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bridge; completed: string[]; qrSpotId?: string }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapInstance | null>(null);
+  const resetView = useRef<() => void>(() => undefined);
   const markers = useRef<{ id: string; destination: string; marker: Marker; button: HTMLButtonElement }[]>([]);
   const [selected, setSelected] = useState<string | undefined>(qrSpotId);
   const [scanning, setScanning] = useState(false);
@@ -63,6 +64,11 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
         // Allow one zoom level of context beyond the initial bridge overview.
         instance.setMinZoom(Math.max(11, instance.getZoom() - 1));
       };
+      resetView.current = () => {
+        setSelected(undefined);
+        instance.fitBounds(bounds, { padding: { top: 120, bottom: 150, left: 70, right: 70 }, maxZoom: 17, duration: 650 });
+      };
+      instance.on('click', resetView.current);
       instance.on('load', () => {
         if (cancelled) return;
         setStatus(''); fit();
@@ -89,9 +95,10 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
           wrapper.append(startLabel);
         }
         wrapper.append(button);
-        button.addEventListener('click', () => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
           setSelected(point.id);
-          instance.easeTo({ center: [p.longitude, p.latitude], zoom: Math.max(instance.getZoom(), 17), offset: [0, -100], duration: 600 });
+          instance.easeTo({ center: [p.longitude, p.latitude], zoom: 18, offset: [0, -100], duration: 600 });
         });
         const marker = new Marker({ element: wrapper }).setLngLat([p.longitude, p.latitude]).addTo(instance);
         return { id: point.id, destination: point.destination, marker, button };
@@ -106,6 +113,7 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
       markers.current = [];
       map.current?.remove();
       map.current = null;
+      resetView.current = () => undefined;
     };
   }, [bridge, retry, qrSpotId]);
   useEffect(() => {
@@ -127,9 +135,12 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
     <Button className={`scan-qr-button${spot ? ' is-hidden' : ''}`} aria-hidden={Boolean(spot)} tabIndex={spot ? -1 : 0} onClick={() => setScanning(true)}><ScanLine size={24} /> SCAN QR</Button>
     {scanning && <QRScanner onClose={() => setScanning(false)} onScan={path => router.push(path)} />}
     {spot && <section className="point-overlay vector-point-overlay" aria-label={'Selected ' + spot.title}>
-      <Button variant="ghost" className="close-point icon-button" aria-label="Close selected point" onClick={() => { markers.current.find(m => m.id === selected)?.button.focus(); setSelected(undefined); }}><X /></Button>
+      <Button variant="ghost" className="close-point icon-button" aria-label="Close selected point" onClick={() => { markers.current.find(m => m.id === selected)?.button.focus(); resetView.current(); }}><X /></Button>
       <div className="point-copy"><h2>{spot.title}</h2><p>{spot.description}</p></div>
-      {qrSpotId === spot.id && <div className="point-actions"><Link className="enter-link" href={`${spot.destination}/ar`}>Enter AR</Link></div>}
+      <div className="point-actions">{qrSpotId === spot.id
+        ? <Link className="enter-link" href={`${spot.destination}/ar`}>ENTER AR</Link>
+        : <Button className="scan-required-button" onClick={() => setScanning(true)}><ScanLine size={20} /> SCAN QR TO ENTER AR</Button>}
+      </div>
     </section>}
   </section>;
 }
