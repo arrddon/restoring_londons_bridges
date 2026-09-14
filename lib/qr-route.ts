@@ -1,3 +1,9 @@
+export const publicOrigin = 'https://restoring-londons-bridges.vercel.app';
+
+export function publicPointUrl(destination: string) {
+  return publicOrigin + destination;
+}
+
 export function pointPathFromQR(value: string, origin: string) {
   const token = value.trim().toUpperCase();
   const compact = /^(A|H)0[1-5]$/.exec(token);
@@ -9,4 +15,3 @@ export function pointPathFromQR(value: string, origin: string) {
     return null;
   }
 }
-
