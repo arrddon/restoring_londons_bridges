@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import jsQR from 'jsqr';
 import { X } from 'lucide-react';
-import { bridges } from '@/lib/bridge-config';
 import { preferredQRcamera } from '@/lib/qr-camera';
+import { pointPathFromQR } from '@/lib/qr-route';
 
 export default function QRScanner({ onClose, onScan }: { onClose: () => void; onScan: (path: string) => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -57,10 +57,8 @@ export default function QRScanner({ onClose, onScan }: { onClose: () => void; on
             const pixels = ctx!.getImageData(0, 0, canvas.width, canvas.height);
             const result = jsQR(pixels.data, canvas.width, canvas.height);
             if (result) {
-              let path = '';
-              try { path = new URL(result.data, window.location.origin).pathname.replace(/\/$/, ''); } catch { /* Invalid QR */ }
-              const known = bridges.some(b => b.spots.some(s => s.destination === path));
-              if (known) { stop(); scanned.current(path); return; }
+              const path = pointPathFromQR(result.data, window.location.origin);
+              if (path) { stop(); scanned.current(path); return; }
               setMessage('This QR is not a recognised bridge point. Try another.');
             }
           }
@@ -85,3 +83,4 @@ export default function QRScanner({ onClose, onScan }: { onClose: () => void; on
     <p role="status">{message}</p>
   </dialog>;
 }
+

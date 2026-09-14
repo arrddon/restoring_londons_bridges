@@ -35,3 +35,11 @@ test('standard and high density displays retain the existing resolution cap', ()
     assert.equal(canvas.height, Math.round(844 * Math.min(ratio, 2)));
   }
 });
+
+test('Android can use a lower pixel ratio to preserve tracking frame rate', () => {
+  const canvas = { clientWidth: 412, clientHeight: 915, width: 0, height: 0 };
+  resizeARCanvas(canvas, 3, 1.5);
+  assert.equal(canvas.width, 618);
+  assert.equal(canvas.height, 1373);
+});
+

@@ -32,7 +32,7 @@ export const bridges: Bridge[] = [
 ].map(bridge => ({ ...bridge, spots: (bridge.id === 'AlbertBridge' ? albertPositions : positions).map((position, i) => ({
   id: `spot-${String(i + 1).padStart(2, '0')}`, bridgeId: bridge.id,
   pinId: `${bridge.id === 'AlbertBridge' ? 'A' : 'H'}${String(i + 1).padStart(2, '0')}`,
-  assetType: (i === 0 || i === 2 ? '3d' : i === 1 ? 'video' : 'image') as Spot['assetType'],
+  assetType: (i === 0 || i === 2 || (bridge.id === 'AlbertBridge' && i === 3) ? '3d' : i === 1 ? 'video' : 'image') as Spot['assetType'],
   sourceAssets: {
     model: null,
     audio: null,
@@ -42,10 +42,12 @@ export const bridges: Bridge[] = [
   contentDurationSeconds: null,
   title: content[bridge.id]?.[i]?.title ?? `Point ${String(i + 1).padStart(2, '0')}`,
   description: content[bridge.id]?.[i]?.description ?? '', position,
-  destination: `/${bridge.id}/spot-${String(i + 1).padStart(2, '0')}`,
+  // Public point URLs are encoded directly into the physical QR markers.
+  destination: `/${bridge.id}/${bridge.id === 'AlbertBridge' ? 'A' : 'H'}${String(i + 1).padStart(2, '0')}`,
   modelPath: bridge.id === 'AlbertBridge' ? [
     'https://res.cloudinary.com/douz9wtb2/image/upload/v1788518406/A01_model_edited_fp20pa.glb', null,
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516011/A03_model_dlwovo.glb', null, null,
+    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516011/A03_model_dlwovo.glb',
+    'https://res.cloudinary.com/douz9wtb2/image/upload/v1789370699/A04_new_jiqjrc.glb', null,
   ][i] : null,
   audioPath: bridge.id === 'AlbertBridge' ? [
     'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516562/A01_audio_normalized_cuby8v.mp3', null,
@@ -61,3 +63,4 @@ export const bridges: Bridge[] = [
   modelSizeMeters: .8, videoWidthMeters: 1.2,
   scale: 1, rotation: [0, 0, 0] as [number, number, number],
 })) }));
+

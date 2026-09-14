@@ -4,7 +4,6 @@ import type { Map as MapInstance, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { QRCodeSVG } from 'qrcode.react';
 import { X, ScanLine } from 'lucide-react';
 import QRScanner from './qr-scanner';
 import { Button } from './ui/button';
@@ -25,22 +24,21 @@ const streetMapStyle = {
   layers: [{ id: 'osm-streets', type: 'raster' as const, source: 'osm' }],
 };
 
-export default function BridgeMap({ bridge, completed }: { bridge: Bridge; completed: string[] }) {
+const pinColors = ['#ef5b4c', '#f2b84b', '#48a878', '#3d83d1', '#8b64c9'];
+
+export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bridge; completed: string[]; qrSpotId?: string }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapInstance | null>(null);
   const markers = useRef<{ id: string; destination: string; marker: Marker; button: HTMLButtonElement }[]>([]);
-  const [selected, setSelected] = useState<string>();
+  const [selected, setSelected] = useState<string | undefined>(qrSpotId);
   const [scanning, setScanning] = useState(false);
   const [status, setStatus] = useState('Loading map…');
   const [retry, setRetry] = useState(0);
-  const [origin, setOrigin] = useState('');
   const router = useRouter();
   const spot = bridge.spots.find(point => point.id === selected);
   useEffect(() => {
     let cancelled = false;
     let observer: ResizeObserver | undefined;
-    let startingMarker: Marker | undefined;
-    setOrigin(window.location.origin);
     setStatus('Loading map…');
     import('maplibre-gl').then(({ Map, Marker, NavigationControl, AttributionControl, LngLatBounds }) => {
       if (cancelled || !container.current) return;
@@ -58,13 +56,6 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
         attributionControl: false,
       });
       map.current = instance;
-      if (startingPoint) {
-        const label = document.createElement('div');
-        label.className = 'map-starting-point';
-        label.textContent = 'STARTING POINT';
-        startingMarker = new Marker({ element: label, anchor: 'top' })
-          .setLngLat([startingPoint.longitude, startingPoint.latitude]).addTo(instance);
-      }
       instance.dragRotate.disable();
       instance.touchZoomRotate.disableRotation();
       instance.addControl(new NavigationControl({ showCompass: false }), 'top-right');
@@ -76,16 +67,24 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
       };
       instance.on('load', () => { if (!cancelled) { setStatus(''); fit(); } });
       instance.on('error', () => { if (!cancelled) setStatus('Some map details could not load. Check your connection and retry.'); });
-      markers.current = bridge.spots.map(point => {
+      markers.current = bridge.spots.map((point, index) => {
         const p = mapLocations[point.pinId];
         const wrapper = document.createElement('div');
         const button = document.createElement('button');
         button.className = 'map-pin';
         button.type = 'button';
         button.setAttribute('aria-label', point.title);
+        button.style.setProperty('--pin-color', pinColors[index % pinColors.length]);
         const label = document.createElement('span');
-        label.textContent = point.pinId;
+        label.setAttribute('aria-hidden', 'true');
         button.append(label);
+        if (point.pinId === 'A04') {
+          wrapper.className = 'map-start-pin';
+          const startLabel = document.createElement('span');
+          startLabel.className = 'map-starting-point';
+          startLabel.textContent = 'STARTING POINT';
+          wrapper.append(startLabel);
+        }
         wrapper.append(button);
         button.addEventListener('click', () => {
           setSelected(point.id);
@@ -100,7 +99,6 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
     return () => {
       cancelled = true;
       observer?.disconnect();
-      startingMarker?.remove();
       markers.current.forEach(({ marker }) => marker.remove());
       markers.current = [];
       map.current?.remove();
@@ -128,8 +126,8 @@ export default function BridgeMap({ bridge, completed }: { bridge: Bridge; compl
     {spot && <section className="point-overlay vector-point-overlay" aria-label={'Selected ' + spot.title}>
       <Button variant="ghost" className="close-point icon-button" aria-label="Close selected point" onClick={() => { markers.current.find(m => m.id === selected)?.button.focus(); setSelected(undefined); }}><X /></Button>
       <div className="point-copy"><h2>{spot.title}</h2><p>{spot.description}</p></div>
-      <div className="qr-image">{origin && <QRCodeSVG value={origin + spot.destination} size={116} marginSize={4} level="M" />}</div>
-      <div className="point-actions"><Link className="enter-link" href={spot.destination}>Enter AR</Link></div>
+      {qrSpotId === spot.id && <div className="point-actions"><Link className="enter-link" href={`${spot.destination}/ar`}>Enter AR</Link></div>}
     </section>}
   </section>;
 }
+

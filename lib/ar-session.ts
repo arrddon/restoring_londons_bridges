@@ -4,6 +4,7 @@ import type { Spot } from './bridge-config';
 import { loadEngine, type XR8Engine } from './xr-engine';
 import { forwardPlacement, initialARScale, pinchARScale } from './ar-placement';
 import { resizeARCanvas } from './ar-canvas';
+import { stableSurfaceAnchor, type SurfacePoint } from './ar-surface';
 
 export type SessionState = 'loading' | 'camera' | 'placing' | 'ready' | 'playing' | 'completed' | 'error';
 export type Session = { start(): Promise<void>; play(): Promise<void>; dispose(): void };
@@ -46,6 +47,8 @@ export function createSession(options: Options): Session {
   let placed = false;
   let tracking = mode === 'preview';
   let frameCount = 0;
+  let normalTrackingFrames = 0;
+  let lostTrackingFrames = 0;
   let reportedTime = -1;
   let observer: ResizeObserver | undefined;
   const root = new THREE.Group();
@@ -55,12 +58,13 @@ export function createSession(options: Options): Session {
   const activePointers = new Map<number, { x: number; y: number }>();
   let pinch: { distance: number; scale: number } | undefined;
   let initialScale = 1;
-  const groundSamples: number[] = [];
+  const groundSamples: SurfacePoint[] = [];
   let missedGroundScans = 0;
   let drag: { id: number; offset: THREE.Vector3 } | undefined;
   let previewDrag: { id: number; x: number; y: number } | undefined;
   const previewTarget = new THREE.Vector3();
   const previewOrbit = new THREE.Spherical();
+  const arMaxPixelRatio = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent) ? 1.5 : 2;
   function setState(next: SessionState, message?: string) {
     state = next;
     if (!abort.signal.aborted) onState(next, message);
@@ -129,7 +133,7 @@ export function createSession(options: Options): Session {
     observer = new ResizeObserver(() => {
       if (!renderer || !camera || abort.signal.aborted) return;
       if (mode === 'ar') {
-        resizeARCanvas(canvas, window.devicePixelRatio);
+        resizeARCanvas(canvas, window.devicePixelRatio, arMaxPixelRatio);
         return;
       }
       const width = canvas.clientWidth, height = canvas.clientHeight;
@@ -138,6 +142,17 @@ export function createSession(options: Options): Session {
       camera.aspect = width / height; camera.updateProjectionMatrix();
     });
     observer.observe(canvas);
+  }
+  function placeAt(anchor: THREE.Vector3) {
+    if (!camera) return;
+    const diameter = new THREE.Box3().setFromObject(root).getBoundingSphere(new THREE.Sphere()).radius * 2;
+    initialScale = initialARScale(camera, anchor, diameter);
+    root.scale.setScalar(initialScale);
+    root.position.copy(anchor);
+    plane.constant = -anchor.y;
+    root.visible = true;
+    placed = true;
+    setState('ready', 'Drag to move · pinch to resize');
   }
   function screenRay(event: PointerEvent) {
     if (!camera) return;
@@ -222,12 +237,21 @@ export function createSession(options: Options): Session {
       try {
         setState('loading', 'Loading content…');
         if (mode === 'ar' && (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia)) throw new Error('AR needs HTTPS or localhost. Open a secure address on your phone.');
+        // Start downloading the SLAM chunk immediately and overlap it with the
+        // content download. This removes a full serial wait on first Android use.
+        const engineLoading = mode === 'ar' ? loadEngine() : undefined;
+        // Content can fail before the engine promise is awaited; attach a handler
+        // now so that an early network failure is not reported as unhandled.
+        void engineLoading?.catch(() => undefined);
         if (spot.assetType === 'video') {
           if (!spot.videoPath) throw new Error('Content for this point is not available yet.');
-          const video = await prepareMedia(spot.videoPath, true) as HTMLVideoElement;
-          if (spot.audioPath) {
+          const [video, separateAudio] = await Promise.all([
+            prepareMedia(spot.videoPath, true) as Promise<HTMLVideoElement>,
+            spot.audioPath ? prepareMedia(spot.audioPath, false, false) : Promise.resolve(undefined),
+          ]);
+          if (separateAudio) {
             video.muted = true;
-            soundtrack = await prepareMedia(spot.audioPath, false, false);
+            soundtrack = separateAudio;
             // Video remains the master timeline; the temporary audio ends with it.
             video.addEventListener('waiting', () => {
               // Pausing during play() startup rejects the pending audio promise
@@ -253,7 +277,10 @@ export function createSession(options: Options): Session {
           root.add(screen);
         } else if (spot.assetType === '3d') {
           if (!spot.modelPath || !spot.audioPath) throw new Error('Content for this point is not available yet.');
-          const gltf = await new GLTFLoader().loadAsync(spot.modelPath);
+          const [gltf] = await Promise.all([
+            new GLTFLoader().loadAsync(spot.modelPath),
+            prepareMedia(spot.audioPath, false),
+          ]);
           if (abort.signal.aborted) { disposeObject(gltf.scene); return; }
           const box = new THREE.Box3().setFromObject(gltf.scene);
           const center = box.getCenter(new THREE.Vector3());
@@ -267,10 +294,12 @@ export function createSession(options: Options): Session {
             for (const clip of gltf.animations) { const action = mixer.clipAction(clip); action.setLoop(THREE.LoopOnce, 1); action.clampWhenFinished = true; action.play(); actions.push(action); }
             mixer.setTime(0);
           }
-          await prepareMedia(spot.audioPath, false);
         } else {
           if (!spot.imagePath || !spot.audioPath) throw new Error('Content for this point is not available yet.');
-          const texture = await new THREE.TextureLoader().loadAsync(spot.imagePath);
+          const [texture] = await Promise.all([
+            new THREE.TextureLoader().loadAsync(spot.imagePath),
+            prepareMedia(spot.audioPath, false),
+          ]);
           checkAlive();
           texture.colorSpace = THREE.SRGBColorSpace;
           const source = texture.image as { naturalWidth?: number; naturalHeight?: number; width?: number; height?: number };
@@ -281,7 +310,6 @@ export function createSession(options: Options): Session {
           const image = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, toneMapped: false }));
           image.position.y = height / 2;
           root.add(image);
-          await prepareMedia(spot.audioPath, false);
         }
         checkAlive();
         if (mode === 'preview') {
@@ -300,7 +328,7 @@ export function createSession(options: Options): Session {
           draw(); return;
         }
         setState('loading', 'Loading AR engine…');
-        xr = await loadEngine(); checkAlive();
+        xr = await engineLoading!; checkAlive();
         xr.clearCameraPipelineModules();
         xr.XrController.configure({ disableWorldTracking: false, scale: 'absolute' });
         ownsXR = true;
@@ -314,7 +342,7 @@ export function createSession(options: Options): Session {
               scene = xrScene.scene; camera = xrScene.camera; renderer = xrScene.renderer;
               camera.position.set(0, 1.5, 0);
               xr!.XrController.updateCameraProjectionMatrix({ origin: camera.position, facing: camera.quaternion });
-              setupScene(); setState('placing', 'Look at the ground ahead and move slowly.');
+              setupScene(); setState('placing', 'Point at the ground ahead and move your phone gently.');
             },
             onCameraStatusChange: ({ status }) => {
               if (status === 'requesting') setState('camera', 'Allow camera access to continue.');
@@ -322,43 +350,63 @@ export function createSession(options: Options): Session {
             },
             onUpdate: ({ processCpuResult }) => {
               if (abort.signal.aborted || state === 'error' || !camera) return;
-              tracking = processCpuResult?.reality?.trackingStatus === 'NORMAL';
-              if (!tracking) { groundSamples.length = 0; pinch = undefined; drag = undefined; }
-              if (!placed && tracking && ++frameCount % 5 === 0) {
-                // Sample the lower centre and both lower sides. Multi-lens Android
-                // devices and iOS Safari can report sparse points at any one ray.
-                const hits = [[.5, .72], [.32, .72], [.68, .72]]
-                  .flatMap(([x, y]) => xr!.XrController.hitTest(x, y, ['FEATURE_POINT']))
-                  .filter(h => h.distance > .3 && h.distance < 6 && camera!.position.y - h.position.y > .25 && camera!.position.y - h.position.y < 3)
+              const normal = processCpuResult?.reality?.trackingStatus === 'NORMAL';
+              if (normal) {
+                normalTrackingFrames++;
+                lostTrackingFrames = 0;
+              } else {
+                normalTrackingFrames = 0;
+                lostTrackingFrames++;
+              }
+              // Hysteresis prevents one unstable ARCore pose from being rendered.
+              // Once tracking returns, wait for a few coherent poses before the
+              // anchored content becomes visible again.
+              tracking = normal && normalTrackingFrames >= (placed ? 4 : 2);
+              if (!normal) {
+                pinch = undefined; drag = undefined;
+                if (lostTrackingFrames >= 2) groundSamples.length = 0;
+                if (placed) root.visible = false;
+              } else if (placed && tracking) root.visible = true;
+              if (!placed && tracking) {
+                frameCount++;
+                // Keep the centre ray authoritative. Side rays are only a fallback
+                // when Android reports no centre feature point at all.
+                const validHits = (hits: ReturnType<XR8Engine['XrController']['hitTest']>) => hits
+                  .filter(hit => {
+                    const cameraDepth = new THREE.Vector3(hit.position.x, hit.position.y, hit.position.z)
+                      .applyMatrix4(camera!.matrixWorldInverse).z;
+                    return hit.distance > .45 && hit.distance < 5
+                      && cameraDepth < -.35
+                      && camera!.position.y - hit.position.y > .25
+                      && camera!.position.y - hit.position.y < 2.5;
+                  })
                   .sort((a, b) => a.distance - b.distance);
+                const centerHits = validHits(xr!.XrController.hitTest(.5, .7, ['FEATURE_POINT']));
+                const hits = centerHits.length ? centerHits : validHits([[.5, .8], [.36, .74], [.64, .74]]
+                  .flatMap(([x, y]) => xr!.XrController.hitTest(x, y, ['FEATURE_POINT'])));
                 const hit = hits[0];
                 if (hit) {
                   missedGroundScans = 0;
-                  groundSamples.push(hit.position.y);
+                  groundSamples.push({ ...hit.position });
                   if (groundSamples.length > 5) groundSamples.shift();
-                  const sorted = [...groundSamples].sort((a, b) => a - b);
-                  const median = sorted[Math.floor(sorted.length / 2)];
-                  const stableSamples = sorted.filter(y => Math.abs(y - median) < .22);
-                  const groundY = stableSamples.reduce((sum, y) => sum + y, 0) / Math.max(stableSamples.length, 1);
-                  const stable = stableSamples.length >= 2 && Math.max(...stableSamples) - Math.min(...stableSamples) < .3;
-                  const anchor = stable ? forwardPlacement(camera, groundY) : null;
-                  if (anchor) {
-                    const diameter = new THREE.Box3().setFromObject(root).getBoundingSphere(new THREE.Sphere()).radius * 2;
-                    initialScale = initialARScale(camera, anchor, diameter);
-                    root.scale.setScalar(initialScale);
-                    root.position.copy(anchor);
-                    plane.constant = -groundY;
-                    root.visible = true; placed = true;
-                    setState('ready', 'Drag to move · pinch to resize');
-                  }
+                  const surface = stableSurfaceAnchor(groundSamples);
+                  if (surface) placeAt(new THREE.Vector3(surface.x, surface.y, surface.z));
                 } else if (++missedGroundScans >= 4) { groundSamples.length = 0; missedGroundScans = 0; }
+                // Do not leave the user scanning indefinitely in a low-texture
+                // scene. The configured camera origin provides a stable ground
+                // estimate while preserving the same world-locked coordinate frame.
+                if (!placed && frameCount >= 45) {
+                  const estimatedGround = camera.getWorldPosition(new THREE.Vector3()).y - 1.5;
+                  const anchor = forwardPlacement(camera, estimatedGround);
+                  if (anchor) placeAt(anchor);
+                }
               }
               update();
             },
             onException: fail,
           },
         ]);
-        resizeARCanvas(canvas, window.devicePixelRatio);
+        resizeARCanvas(canvas, window.devicePixelRatio, arMaxPixelRatio);
         setState('camera', 'Starting camera…');
         await xr.run({ canvas, allowedDevices: xr.XrConfig.device().ANY, cameraConfig: { direction: xr.XrConfig.camera().BACK } });
       } catch (error) { fail(error); }
@@ -401,3 +449,4 @@ export function createSession(options: Options): Session {
     },
   };
 }
+

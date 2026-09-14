@@ -41,14 +41,13 @@ function GuideMap() {
   }
   const start = project(mapStartingPoints.AlbertBridge);
   const points = Array.from({ length: 5 }, (_, i) => project(mapLocations[`A0${i + 1}`]));
-  return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label="OpenStreetMap of Albert Bridge with five experience points and the starting point at the south entrance. North is up.">
+  return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label="OpenStreetMap of Albert Bridge with five experience points and the starting point at A04. North is up.">
     <g className="guide-map-tiles">{tiles}</g>
     {points.map((p, i) => <g key={i}>
       <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
       <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{String(i + 1).padStart(2, '0')}</text>
     </g>)}
-    <circle cx={start.x} cy={start.y} r="6" fill="#111" stroke="white" strokeWidth="2" />
-    <path d={`M${start.x - 8} ${start.y} h-24`} stroke="#111" strokeWidth="1.5" />
+    <path d={`M${start.x - 20} ${start.y} h-12`} stroke="#111" strokeWidth="1.5" />
     <rect x={start.x - 110} y={start.y - 16} width="78" height="32" rx="2" fill="white" stroke="#111" />
     <text x={start.x - 71} y={start.y + 5} textAnchor="middle" fontSize="16" fontWeight="700">START</text>
   </svg>;
@@ -69,3 +68,4 @@ export default function BridgeGuide() {
     </article>
   </div>;
 }
+

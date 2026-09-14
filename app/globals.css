@@ -98,6 +98,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset:
 /* No rectangular focus marker over circular map pins. */
 .map-starting-point { pointer-events: none; padding: 10px 14px; border-radius: 18px; border: 2px solid white; background: #173c4d; color: white; box-shadow: 0 3px 10px #173c4d30; font-size: 14px; font-weight: 700; white-space: nowrap; }
 .map-starting-point::before { content: ''; position: absolute; top: -7px; left: calc(50% - 5px); width: 10px; height: 10px; background: #173c4d; border-top: 2px solid white; border-left: 2px solid white; transform: rotate(45deg); }
+.map-start-pin { position: relative; width: 54px; height: 54px; }
+.map-start-pin .map-pin { left: 50%; top: 50%; }
+.map-start-pin .map-starting-point { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); }
 .map-pin:focus-visible { outline: none; }
 .map-pin:focus-visible > span { outline: 2px solid #111; outline-offset: 3px; }
 button, input, select, textarea { font-family: inherit; }
@@ -169,3 +172,32 @@ button, input, select, textarea { font-family: inherit; }
 .guide-back header, .guide-map-note { background: #fffffff0; padding: 4mm; }
 .guide-back header { left: 14mm; }
 .guide-map-note { left: 14mm; right: 14mm; }
+
+/* Map locations are plain colour-coded points. QR access controls the AR CTA. */
+.map-pin > span { width: 24px; height: 24px; margin: 12px; border: 3px solid #fff; background: var(--pin-color); box-shadow: 0 3px 10px #102b3b66; backdrop-filter: none; }
+.map-pin.selected > span { background: var(--pin-color); box-shadow: 0 0 0 4px #fff9, 0 4px 14px #102b3b80; }
+.map-pin.completed > span { background: var(--pin-color); }
+.vector-point-overlay { display: block; }
+.vector-point-overlay .point-copy { padding-right: 18px; }
+.vector-point-overlay .point-actions { margin-top: 18px; }
+
+.point-qr-sheet { min-height: 100vh; padding: 32px; background: #fff; color: #111; }
+.point-qr-sheet header { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; max-width: 1000px; margin: 0 auto 32px; }
+.point-qr-sheet h1 { margin: 0; }
+.point-qr-sheet > section { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1000px; margin: auto; }
+.point-qr-sheet article { padding: 24px; border: 1px solid #ccc; text-align: center; break-inside: avoid; }
+.point-qr-sheet article svg { width: 100%; height: auto; max-width: 240px; }
+.point-qr-sheet article h2 { margin: 16px 0 4px; font-size: 32px; }
+.point-qr-sheet article p { margin: 0 0 10px; }
+.point-qr-sheet article small { overflow-wrap: anywhere; }
+@media print { .point-qr-sheet { padding: 10mm; } .point-qr-sheet header a { display: none; } }
+
+/* One minimal, full-size A4 marker per /Guide-A01 … /Guide-A05 route. */
+.field-qr-guide { width: 210mm; height: 297mm; margin: 0 auto; padding: 22mm 20mm 18mm; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: #fff; color: #111; }
+.field-qr-guide header { align-self: stretch; border-top: 1px solid #111; padding-top: 8mm; }
+.field-qr-guide h1 { margin: 0; font-size: 34pt; font-weight: 600; line-height: .96; letter-spacing: -.045em; }
+.field-qr-guide p { margin: 8mm 0 0; font-size: 13pt; font-weight: 600; letter-spacing: .08em; }
+.field-qr-guide > svg { width: 158mm; height: 158mm; flex: none; }
+@media screen and (max-width: 800px) { .field-qr-guide { transform-origin: top left; } }
+@media print { .field-qr-guide { margin: 0; break-after: page; } }
+
