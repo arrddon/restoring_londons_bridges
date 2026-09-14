@@ -24,8 +24,6 @@ const streetMapStyle = {
   layers: [{ id: 'osm-streets', type: 'raster' as const, source: 'osm' }],
 };
 
-const pinColors = ['#ef5b4c', '#f2b84b', '#48a878', '#3d83d1', '#8b64c9'];
-
 export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bridge; completed: string[]; qrSpotId?: string }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapInstance | null>(null);
@@ -73,14 +71,13 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
         if (qrLocation) instance.jumpTo({ center: [qrLocation.longitude, qrLocation.latitude], zoom: 18 });
       });
       instance.on('error', () => { if (!cancelled) setStatus('Some map details could not load. Check your connection and retry.'); });
-      markers.current = bridge.spots.map((point, index) => {
+      markers.current = bridge.spots.map(point => {
         const p = mapLocations[point.pinId];
         const wrapper = document.createElement('div');
         const button = document.createElement('button');
         button.className = 'map-pin';
         button.type = 'button';
         button.setAttribute('aria-label', point.title);
-        button.style.setProperty('--pin-color', pinColors[index % pinColors.length]);
         const label = document.createElement('span');
         label.setAttribute('aria-hidden', 'true');
         button.append(label);
@@ -127,7 +124,7 @@ export default function BridgeMap({ bridge, completed, qrSpotId }: { bridge: Bri
     <div ref={container} className="map-surface" />
     <header className="map-heading"><h1>{bridge.title}</h1></header>
     {status && <div className="notice" role="status">{status}{status !== 'Loading map…' && <button onClick={() => setRetry(n => n + 1)}>Retry</button>}</div>}
-    <Button className="scan-qr-button" onClick={() => setScanning(true)}><ScanLine size={24} /> SCAN QR</Button>
+    <Button className={`scan-qr-button${spot ? ' is-hidden' : ''}`} aria-hidden={Boolean(spot)} tabIndex={spot ? -1 : 0} onClick={() => setScanning(true)}><ScanLine size={24} /> SCAN QR</Button>
     {scanning && <QRScanner onClose={() => setScanning(false)} onScan={path => router.push(path)} />}
     {spot && <section className="point-overlay vector-point-overlay" aria-label={'Selected ' + spot.title}>
       <Button variant="ghost" className="close-point icon-button" aria-label="Close selected point" onClick={() => { markers.current.find(m => m.id === selected)?.button.focus(); setSelected(undefined); }}><X /></Button>
