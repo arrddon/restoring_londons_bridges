@@ -25,6 +25,7 @@ test('each bridge is numbered 01 south to 05 north', () => {
     const southToNorth = [...bridge.spots].sort((a, b) => mapLocations[a.pinId].latitude - mapLocations[b.pinId].latitude);
     const prefix = bridge.id === 'AlbertBridge' ? 'A' : 'H';
     assert.deepEqual(southToNorth.map(spot => spot.pinId), [1, 2, 3, 4, 5].map(number => `${prefix}0${number}`));
+    assert.deepEqual(southToNorth.map(spot => spot.title.slice(0, 2)), ['01', '02', '03', '04', '05']);
     assert.deepEqual(southToNorth.map(spot => spot.destination), southToNorth.map(spot => `/${bridge.id}/${spot.pinId}`));
   }
 });
@@ -45,11 +46,11 @@ test('Albert Bridge uses surveyed pins and starts at southern A01', () => {
 test('Hammersmith Bridge uses the supplied titles and surveyed coordinates', () => {
   const hammersmith = bridges.find(bridge => bridge.id === 'HammersmithBridge');
   assert.deepEqual(hammersmith.spots.map(spot => [spot.pinId, spot.title]), [
-    ['H01', 'Silvertown Tunnel'],
-    ['H02', 'Boat Race'],
-    ['H03', 'Bazalgette'],
-    ['H04', 'Weather Data'],
-    ['H05', 'IRA Bombing'],
+    ['H01', '01. Silvertown Tunnel'],
+    ['H02', '02. Boat Race'],
+    ['H03', '03. Bazalgette'],
+    ['H04', '04. Weather Data'],
+    ['H05', '05. IRA Bombing'],
   ]);
   assert.deepEqual(mapLocations.H01, { latitude: 51.487487, longitude: -0.231072 });
   assert.deepEqual(mapLocations.H02, { latitude: 51.487866, longitude: -0.230675 });
@@ -64,16 +65,16 @@ test('Hammersmith Bridge uses the supplied titles and surveyed coordinates', () 
 
 test('all point assets match the approved asset manifest', () => {
   const expected = {
-    A01: ['Stop Marching Sign', '3d', 'A01_model_xokmyr.glb', 'A01_audio_xzmffg.mp3', null],
-    A02: ['Timber and Ashphalt', '3d', 'A02_model_qra1kg.glb', null, null],
-    A03: ['Bazalgette', 'video', null, null, 'A03_video_uhoagu.mp4'],
-    A04: ['Lights on the Bridge', 'image', 'A04_image_hwgvpn.jpg', 'A04_audio_ljpesh.mp3', null],
-    A05: ['The Damaged Rocker', '3d', 'A05_model_okrfgz.glb', 'A05_audio_xobgft.mp3', null],
-    H01: ['Silvertown Tunnel', '3d', 'H01_model_dh03cv.glb', 'H01_audio_fopekz.mp3', null],
-    H02: ['Boat Race', 'video', null, null, 'H02_video_yszts1.mp4'],
-    H03: ['Bazalgette', '3d', 'H03_model_raopgc.glb', 'H03_audio_khl7dt.mp3', null],
-    H04: ['Weather Data', 'image', 'H04_image_xfq0jx.jpg', null, null],
-    H05: ['IRA Bombing', 'video', null, null, 'H05_video_t7eleh.mp4'],
+    A01: ['01. Stop Marching Sign', '3d', 'A01_model_xokmyr.glb', 'A01_audio_juuptd.mp3', null],
+    A02: ['02. Timber and Ashphalt', '3d', 'A02_model_qra1kg.glb', 'A02_audio_q0sipu.mp3', null],
+    A03: ['03. Bazalgette', 'video', null, null, 'A03_video_uhoagu.mp4'],
+    A04: ['04. Lights on the Bridge', 'image', 'A04_image_hwgvpn.jpg', 'A04_audio_ljpesh.mp3', null],
+    A05: ['05. The Damaged Rocker', '3d', 'A05_model_okrfgz.glb', 'A05_audio_mocwxx.mp3', null],
+    H01: ['01. Silvertown Tunnel', '3d', 'H01_model_dh03cv.glb', 'H01_audio_fopekz.mp3', null],
+    H02: ['02. Boat Race', 'video', null, null, 'H02_video_yszts1.mp4'],
+    H03: ['03. Bazalgette', '3d', 'H03_model_raopgc.glb', 'H03_audio_khl7dt.mp3', null],
+    H04: ['04. Weather Data', 'image', 'H04_image_xfq0jx.jpg', null, null],
+    H05: ['05. IRA Bombing', 'video', null, null, 'H05_video_t7eleh.mp4'],
   };
   for (const spot of bridges.flatMap(bridge => bridge.spots)) {
     const visual = spot.modelPath ?? spot.imagePath;
