@@ -195,8 +195,9 @@ button, input, select, textarea { font-family: inherit; }
 .point-qr-sheet h1 { margin: 0; }
 .point-qr-sheet > section { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1000px; margin: auto; }
 .point-qr-sheet article { padding: 24px; border: 1px solid #ccc; text-align: center; break-inside: avoid; }
+.point-qr-brand { margin: 0 0 20px; font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 29px; font-weight: 600; line-height: .9; letter-spacing: -.04em; text-transform: uppercase; }
 .point-qr-sheet article svg { width: 100%; height: auto; max-width: 240px; }
-.point-qr-sheet article h2 { margin: 16px 0 4px; font-size: 32px; }
+.point-qr-sheet article h3 { margin: 16px 0 4px; font-size: 32px; }
 .point-qr-sheet article p { margin: 0 0 10px; }
 .point-qr-sheet article small { overflow-wrap: anywhere; }
 @media print { .point-qr-sheet { padding: 10mm; } .point-qr-sheet header a { display: none; } }
