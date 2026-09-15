@@ -12,62 +12,58 @@ export type Bridge = { id: string; title: string; mapPath: string; mapWidth: num
 // Normalized image coordinates (0–1). Positions remain provisional.
 const positions = [{ x: .275, y: .235 }, { x: .40, y: .31 }, { x: .52, y: .38 }, { x: .65, y: .455 }, { x: .775, y: .53 }];
 const albertPositions = [{ x: .405, y: .25 }, { x: .465, y: .375 }, { x: .525, y: .50 }, { x: .585, y: .625 }, { x: .645, y: .75 }];
-const content: Record<string, { title: string }[]> = {
+type SpotContent = Pick<Spot, 'title' | 'assetType' | 'contentDurationSeconds' | 'modelPath' | 'audioPath' | 'videoPath' | 'imagePath'>;
+const content: Record<string, SpotContent[]> = {
   AlbertBridge: [
-    { title: '01. Stop Marching Sign' },
-    { title: '02. Timber and Ashphalt' },
-    { title: '03. Bazalgette' },
-    { title: '04. Lights on the Bridge' },
-    { title: '05. The Damaged Rocker' },
+    { title: 'Stop Marching Sign', assetType: '3d', contentDurationSeconds: null,
+      modelPath: 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789456312/A01_model_xokmyr.glb',
+      audioPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456315/A01_audio_xzmffg.mp3', videoPath: null, imagePath: null },
+    { title: 'Timber and Ashphalt', assetType: '3d', contentDurationSeconds: null,
+      modelPath: 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789456319/A02_model_qra1kg.glb',
+      audioPath: null, videoPath: null, imagePath: null },
+    { title: 'Bazalgette', assetType: 'video', contentDurationSeconds: null, modelPath: null, audioPath: null,
+      videoPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456330/A03_video_uhoagu.mp4', imagePath: null },
+    { title: 'Lights on the Bridge', assetType: 'image', contentDurationSeconds: null, modelPath: null,
+      audioPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456314/A04_audio_ljpesh.mp3', videoPath: null,
+      imagePath: 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789456311/A04_image_hwgvpn.jpg' },
+    { title: 'The Damaged Rocker', assetType: '3d', contentDurationSeconds: null,
+      modelPath: 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789456323/A05_model_okrfgz.glb',
+      audioPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456314/A05_audio_xobgft.mp3', videoPath: null, imagePath: null },
   ],
   HammersmithBridge: [
-    { title: '01. Coat of Arms' },
-    { title: "02. Bazalgette's London" },
-    { title: '03. Oxford Cambridge Boat Race' },
-    { title: '04. Harrods Furniture Depository' },
-    { title: '05. The Pedestal Crack' },
+    { title: 'Silvertown Tunnel', assetType: '3d', contentDurationSeconds: null,
+      modelPath: 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789457355/H01_model_dh03cv.glb',
+      audioPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456289/H01_audio_fopekz.mp3', videoPath: null, imagePath: null },
+    { title: 'Boat Race', assetType: 'video', contentDurationSeconds: null, modelPath: null, audioPath: null,
+      videoPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456304/H02_video_yszts1.mp4', imagePath: null },
+    { title: 'Bazalgette', assetType: '3d', contentDurationSeconds: null,
+      modelPath: 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789456294/H03_model_raopgc.glb',
+      audioPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456289/H03_audio_khl7dt.mp3', videoPath: null, imagePath: null },
+    { title: 'Weather Data', assetType: 'image', contentDurationSeconds: 60, modelPath: null, audioPath: null, videoPath: null,
+      imagePath: 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789456288/H04_image_xfq0jx.jpg' },
+    { title: 'IRA Bombing', assetType: 'video', contentDurationSeconds: null, modelPath: null, audioPath: null,
+      videoPath: 'https://res.cloudinary.com/douz9wtb2/video/upload/v1789456307/H05_video_t7eleh.mp4', imagePath: null },
   ],
 };
 export const bridges: Bridge[] = [
   { id: 'AlbertBridge', title: 'Albert Bridge', mapPath: '/Assets/Maps/map_AB_v3.png', mapWidth: 941, mapHeight: 1672, mapFocusY: .5, landscapeAngle: 0 },
   { id: 'HammersmithBridge', title: 'Hammersmith Bridge', mapPath: '/Assets/Maps/map_HB_v3.png', mapWidth: 941, mapHeight: 1672, mapFocusY: .5, landscapeAngle: 0 },
-].map(bridge => ({ ...bridge, spots: (bridge.id === 'AlbertBridge' ? albertPositions : positions).map((position, i) => ({
+].map(bridge => ({ ...bridge, spots: (bridge.id === 'AlbertBridge' ? albertPositions : positions).map((position, i) => {
+  const pointContent = content[bridge.id][i];
+  return ({
   id: `spot-${String(i + 1).padStart(2, '0')}`, bridgeId: bridge.id,
   pinId: `${bridge.id === 'AlbertBridge' ? 'A' : 'H'}${String(i + 1).padStart(2, '0')}`,
-  assetType: (bridge.id === 'AlbertBridge'
-    ? ['3d', '3d', 'video', 'image', '3d']
-    : ['image', 'image', '3d', 'video', '3d'])[i] as Spot['assetType'],
+  ...pointContent,
   sourceAssets: {
-    model: null,
-    audio: null,
-    video: null,
-    image: null,
+    model: pointContent.modelPath,
+    audio: pointContent.audioPath,
+    video: pointContent.videoPath,
+    image: pointContent.imagePath,
   },
-  contentDurationSeconds: null,
-  title: content[bridge.id]?.[i]?.title ?? `Point ${String(i + 1).padStart(2, '0')}`,
   position,
   // Public point URLs are encoded directly into the physical QR markers.
   destination: `/${bridge.id}/${bridge.id === 'AlbertBridge' ? 'A' : 'H'}${String(i + 1).padStart(2, '0')}`,
-  modelPath: bridge.id === 'AlbertBridge' ? [
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1789370699/A04_new_jiqjrc.glb',
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516011/A03_model_dlwovo.glb',
-    null, null,
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788518406/A01_model_edited_fp20pa.glb',
-  ][i] : null,
-  audioPath: bridge.id === 'AlbertBridge' ? [
-    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516561/A04_audio_normalized_c8xjrc.mp3',
-    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516558/A03_audio_normalized_fglgg5.mp3',
-    null,
-    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516561/A05_audio_normalized_j4utxo.mp3',
-    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516562/A01_audio_normalized_cuby8v.mp3',
-  ][i] : null,
-  videoPath: bridge.id === 'AlbertBridge' && i === 2 ? 'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516032/A02_u2pcbc.mp4' : null,
-  imagePath: bridge.id === 'AlbertBridge' ? [
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516012/A04_image_hxkco3.jpg',
-    null, null,
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516004/A05_image_xorlon.jpg',
-    null,
-  ][i] : null,
   modelSizeMeters: .8, videoWidthMeters: 1.2,
   scale: 1, rotation: [0, 0, 0] as [number, number, number],
-})) }));
+  });
+}) }));

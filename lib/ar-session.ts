@@ -50,6 +50,8 @@ export function createSession(options: Options): Session {
   let normalTrackingFrames = 0;
   let lostTrackingFrames = 0;
   let reportedTime = -1;
+  let timedVisualStartedAt: number | undefined;
+  let timedVisualDuration: number | undefined;
   let observer: ResizeObserver | undefined;
   const root = new THREE.Group();
   root.rotation.set(...spot.rotation);
@@ -121,6 +123,15 @@ export function createSession(options: Options): Session {
       const duration = Number.isFinite(media.duration) && media.duration > 0 ? media.duration : spot.contentDurationSeconds;
       const progress = duration ? Math.min(.999, media.currentTime / duration) : 0;
       if (Math.abs(media.currentTime - reportedTime) > .05) { reportedTime = media.currentTime; onProgress(progress); }
+    } else if (state === 'playing' && timedVisualStartedAt !== undefined && timedVisualDuration) {
+      const elapsed = (performance.now() - timedVisualStartedAt) / 1000;
+      if (elapsed >= timedVisualDuration) {
+        timedVisualStartedAt = undefined;
+        onProgress(1); setState('completed'); onComplete();
+      } else if (Math.abs(elapsed - reportedTime) > .05) {
+        reportedTime = elapsed;
+        onProgress(elapsed / timedVisualDuration);
+      }
     }
   }
   function setupScene() {
@@ -276,10 +287,10 @@ export function createSession(options: Options): Session {
           screen.position.y = height / 2;
           root.add(screen);
         } else if (spot.assetType === '3d') {
-          if (!spot.modelPath || !spot.audioPath) throw new Error('Content for this point is not available yet.');
+          if (!spot.modelPath) throw new Error('Content for this point is not available yet.');
           const [gltf] = await Promise.all([
             new GLTFLoader().loadAsync(spot.modelPath),
-            prepareMedia(spot.audioPath, false),
+            spot.audioPath ? prepareMedia(spot.audioPath, false) : Promise.resolve(undefined),
           ]);
           if (abort.signal.aborted) { disposeObject(gltf.scene); return; }
           const box = new THREE.Box3().setFromObject(gltf.scene);
@@ -290,6 +301,7 @@ export function createSession(options: Options): Session {
           gltf.scene.scale.setScalar(scale);
           root.add(gltf.scene);
           if (gltf.animations.length) {
+            if (!media) timedVisualDuration = spot.contentDurationSeconds ?? Math.max(...gltf.animations.map(clip => clip.duration));
             mixer = new THREE.AnimationMixer(gltf.scene);
             for (const clip of gltf.animations) { const action = mixer.clipAction(clip); action.setLoop(THREE.LoopOnce, 1); action.clampWhenFinished = true; action.play(); actions.push(action); }
             mixer.setTime(0);
@@ -298,9 +310,10 @@ export function createSession(options: Options): Session {
           if (!spot.imagePath || !spot.audioPath) throw new Error('Content for this point is not available yet.');
           const [texture] = await Promise.all([
             new THREE.TextureLoader().loadAsync(spot.imagePath),
-            prepareMedia(spot.audioPath, false),
+            spot.audioPath ? prepareMedia(spot.audioPath, false) : Promise.resolve(undefined),
           ]);
           checkAlive();
+          if (!media) timedVisualDuration = spot.contentDurationSeconds ?? undefined;
           texture.colorSpace = THREE.SRGBColorSpace;
           const source = texture.image as { naturalWidth?: number; naturalHeight?: number; width?: number; height?: number };
           const imageWidth = source.naturalWidth || source.width || 1;
@@ -412,7 +425,8 @@ export function createSession(options: Options): Session {
       } catch (error) { fail(error); }
     },
     async play() {
-      if (!media || !placed || startingPlayback || !['ready', 'completed'].includes(state)) return;
+      const timedVisual = !media && Boolean(timedVisualDuration);
+      if ((!media && !timedVisual) || !placed || startingPlayback || !['ready', 'completed'].includes(state)) return;
       startingPlayback = true;
       for (const element of mediaElements) element.currentTime = 0;
       for (const action of actions) action.reset().play();
@@ -421,6 +435,7 @@ export function createSession(options: Options): Session {
       try {
         await Promise.all(mediaElements.map(element => element.play()));
         if (abort.signal.aborted || state === 'error') { stopPlayback(); return; }
+        timedVisualStartedAt = timedVisual ? performance.now() : undefined;
         setState('playing');
       } catch (error) {
         stopPlayback();

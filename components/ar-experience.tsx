@@ -20,8 +20,8 @@ export default function ARExperience({ bridge, spot, complete }: { bridge: Bridg
   const available = spot.assetType === 'video'
     ? Boolean(spot.videoPath)
     : spot.assetType === 'image'
-      ? Boolean(spot.imagePath && spot.audioPath)
-      : Boolean(spot.modelPath && spot.audioPath);
+      ? Boolean(spot.imagePath && (spot.audioPath || spot.contentDurationSeconds))
+      : Boolean(spot.modelPath);
   async function start(nextMode: 'ar' | 'preview') {
     const token = ++generation.current;
     session.current?.dispose(); session.current = null;
