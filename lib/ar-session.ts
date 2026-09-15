@@ -342,7 +342,7 @@ export function createSession(options: Options): Session {
               scene = xrScene.scene; camera = xrScene.camera; renderer = xrScene.renderer;
               camera.position.set(0, 1.5, 0);
               xr!.XrController.updateCameraProjectionMatrix({ origin: camera.position, facing: camera.quaternion });
-              setupScene(); setState('placing', 'Point at the ground ahead and move your phone gently.');
+              setupScene(); setState('placing', 'SCAN THE GROUND AND YOUR SURROUNDINGS\nMOVE YOUR PHONE SLOWLY');
             },
             onCameraStatusChange: ({ status }) => {
               if (status === 'requesting') setState('camera', 'Allow camera access to continue.');
@@ -449,4 +449,3 @@ export function createSession(options: Options): Session {
     },
   };
 }
-

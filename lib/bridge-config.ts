@@ -14,18 +14,18 @@ const positions = [{ x: .275, y: .235 }, { x: .40, y: .31 }, { x: .52, y: .38 },
 const albertPositions = [{ x: .405, y: .25 }, { x: .465, y: .375 }, { x: .525, y: .50 }, { x: .585, y: .625 }, { x: .645, y: .75 }];
 const content: Record<string, { title: string }[]> = {
   AlbertBridge: [
-    { title: 'The Damaged Rocker' },
-    { title: 'Bazalgette' },
-    { title: 'Timber and Ashphalt' },
-    { title: 'Stop Marching Sign' },
-    { title: 'Lights on the Bridge' },
+    { title: '05. The Damaged Rocker' },
+    { title: '03. Bazalgette' },
+    { title: '02. Timber and Ashphalt' },
+    { title: '01. Stop Marching Sign' },
+    { title: '04. Lights on the Bridge' },
   ],
   HammersmithBridge: [
-    { title: 'The Pedestal Crack' },
-    { title: 'Harrods Furniture Depository' },
-    { title: 'Oxford Cambridge Boat Race' },
-    { title: "Bazalgette's London" },
-    { title: 'Coat of Arms' },
+    { title: '05. The Pedestal Crack' },
+    { title: '04. Harrods Furniture Depository' },
+    { title: '03. Oxford Cambridge Boat Race' },
+    { title: "02. Bazalgette's London" },
+    { title: '01. Coat of Arms' },
   ],
 };
 export const bridges: Bridge[] = [

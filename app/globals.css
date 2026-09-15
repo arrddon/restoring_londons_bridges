@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&display=swap');
 @import 'tailwindcss';
 /* Vector map controls stay clear of the title, QR button and attribution. */
 .vector-map-screen .maplibregl-ctrl-top-right { top: 105px; right: 12px; }
@@ -26,7 +27,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset:
 .map-plane { position: absolute; width: 0; height: 0; pointer-events: none; }
 .map-plane img { position: absolute; max-width: none; user-select: none; }
 .map-heading { position: absolute; top: max(32px, env(safe-area-inset-top)); left: 20px; right: 20px; pointer-events: none; text-align: center; }
-.map-heading h1 { margin: 0; padding: 0; font-size: clamp(34px, 5.2vw, 68px); font-weight: 900; line-height: 1; letter-spacing: -.055em; text-transform: uppercase; color: #111111; text-shadow: 0 1px 14px #ffffff75; }
+.map-heading h1 { margin: 0; padding: 0; font-family: "Libre Bodoni", Bodoni MT, serif; font-size: clamp(34px, 5.2vw, 68px); font-weight: 600; line-height: 1; letter-spacing: -.035em; text-transform: uppercase; color: #111111; text-shadow: 0 1px 14px #ffffff75; }
 .map-pin { position: absolute; width: 54px; height: 54px; transform: translate(-50%, -50%); border: 0; background: transparent; padding: 3px; cursor: default; touch-action: none; }
 .map-pin > span { position: relative; isolation: isolate; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; border: 1px solid #ffffffb8; background: radial-gradient(circle at 28% 22%, #ffffffed 0%, #f1f9ff8a 24%, #c1d7e650 49%, #60849dad 83%, #f1faffc4 100%); box-shadow: inset 2px 3px 6px #ffffffa3, inset -4px -6px 10px #23476655, 0 8px 13px #132d493d; backdrop-filter: blur(7px) saturate(145%); font: 600 var(--ui-size)/1 "Pretendard Variable", Pretendard, sans-serif; color: #193c54; transition: box-shadow .2s, color .2s; }
 .map-pin > span::before { content: ''; position: absolute; top: 7px; left: 9px; width: 13px; height: 7px; border-radius: 50%; background: #ffffffa1; filter: blur(1px); transform: rotate(-30deg); z-index: -1; }
@@ -83,16 +84,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset:
 @media (max-width: 700px) { .map-heading { top: max(28px, env(safe-area-inset-top)); } .map-heading h1 { font-size: clamp(30px, 8.7vw, 48px); } }
 @media (max-height: 460px) { .map-heading { top: 16px; } .map-heading h1 { font-size: 32px; } .scan-qr-button { min-height: 52px; bottom: 12px; } .ar-status { top: calc(40% + 35px); } .reticle { top: 37%; width: 60px; height: 60px; } .playback-overlay { bottom: 16px; } .progress { margin-bottom: 12px; } }
 @media (prefers-reduced-motion: reduce) { .playing .reticle, .point-overlay, .experience-screen { animation: none; } .map-screen { transition: none; } .map-leaving { transform: none; filter: none; } }
-/* Flat circular points; shared UI text size for titles and descriptions. */
+/* Flat circular points and a title-only selected-place card. */
 .map-pin > span { border-radius: 50%; background: #ffffffd6; border: 1px solid #ffffffc9; box-shadow: 0 3px 10px #173c4d20; backdrop-filter: blur(12px); color: #111111; }
 .map-pin > span::before { content: none; }
 .map-pin.selected > span { background: #ffffffed; color: #111111; box-shadow: 0 0 0 3px #ffffff70, 0 0 0 4px #1111118c; }
 .map-pin.completed > span { background: #dce4e8ed; color: #111111; }
 .point-overlay { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 16px; padding: 24px 18px 18px; min-height: 0; max-height: calc(100dvh - 220px); overflow-y: auto; overscroll-behavior: contain; }
 .point-copy { grid-column: 1 / -1; padding-right: 14px; }
-.point-copy h2, .point-copy p { font-size: var(--ui-size); line-height: 1.5; margin: 0; }
-.point-copy h2 { font-weight: 600; margin-bottom: 8px; }
-.point-copy p { font-weight: 400; color: #111111; }
+.point-copy h2 { font-size: 21px; line-height: 1.35; font-weight: 600; margin: 0; }
+.point-overlay .enter-link, .point-overlay .scan-required-button { font-size: 18px; }
 .point-overlay .point-actions { align-self: end; }
 @media (max-height: 460px) { .point-overlay { max-height: calc(100dvh - 185px); } }
 
@@ -116,10 +116,16 @@ button, input, select, textarea { font-family: inherit; }
 .glass-panel { background: var(--glass); border: var(--glass-border); border-radius: 24px; backdrop-filter: blur(24px); box-shadow: var(--glass-shadow); padding: 24px; }
 .ar-entry, .xr-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(350px, calc(100% - 40px)); text-align: center; }
 .ar-entry h1, .ar-entry p, .xr-message p, .xr-hint { font-size: var(--ui-size); line-height: 1.5; margin: 0 0 18px; }
-.ar-entry h1 { font-weight: 600; }
+.ar-entry h1 { font-size: 22px; font-weight: 600; }
+.ar-entry-steps { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; padding: 0; }
+.ar-entry-steps li { display: flex; min-width: 0; min-height: 128px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1px solid #ffffffb8; border-radius: 18px; background: #ffffff73; font-size: 15px; font-weight: 700; line-height: 1.25; letter-spacing: .02em; }
+.ar-entry-steps svg { width: 38px; height: 38px; stroke-width: 1.7; }
 .ar-entry .play-button, .xr-message .play-button { margin: 0 auto 12px; }
 .preview-button { font-size: var(--ui-size); font-weight: 400; }
 .xr-hint { background: #ffffffd9; border-radius: 12px; padding: 8px 12px; margin-bottom: 20px; }
+.xr-message.is-scanning { width: min(390px, calc(100% - 32px)); padding: 30px 22px; }
+.xr-message.is-scanning > svg { width: 54px; height: 54px; margin-bottom: 16px; stroke-width: 1.6; }
+.xr-message.is-scanning p { margin: 0; white-space: pre-line; font-size: clamp(22px, 6vw, 30px); font-weight: 750; line-height: 1.2; letter-spacing: -.02em; }
 .xr-playback { bottom: max(44px, calc(env(safe-area-inset-bottom) + 24px)); }
 .live-experience .ar-heading .micro { background: #ffffffc9; padding: 10px 14px; border-radius: 14px; }
 .xr-attribution { position: absolute; bottom: max(8px, env(safe-area-inset-bottom)); left: 12px; right: 12px; font-size: 10px; text-align: center; color: #111; text-shadow: 0 0 4px #fff; }

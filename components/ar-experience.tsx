@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Play, RotateCcw, ScanLine, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Bridge, Spot } from '@/lib/bridge-config';
 import type { Session, SessionState } from '@/lib/ar-session';
@@ -46,10 +46,16 @@ export default function ARExperience({ bridge, spot, complete }: { bridge: Bridg
     <header className="ar-heading"><Link href={`/${bridge.id}`} className="back-link"><ArrowLeft size={18} /> Map</Link><span className="micro">{spot.title}</span></header>
     {state === 'entry' && <section className="ar-entry glass-panel">
       <h1>{spot.title}</h1>
-      <p>{available ? spot.assetType === 'video' ? 'Place a video in the space around you.' : spot.assetType === 'image' ? 'Place an image in the space around you.' : 'Place the object in the space around you.' : 'Content for this point is not available yet.'}</p>
+      {available ? <ul className="ar-entry-steps" aria-label="Before entering AR">
+        <li><ScanLine aria-hidden="true" /><span>SCAN YOUR<br />SURROUNDINGS</span></li>
+        <li><Volume2 aria-hidden="true" /><span>TURN UP<br />YOUR VOLUME</span></li>
+      </ul> : <p>Content for this point is not available yet.</p>}
       {available && <><Button className="play-button" onClick={() => void start('ar')}>Start AR</Button><Button variant="ghost" className="preview-button" onClick={() => void start('preview')}>Preview content</Button></>}
     </section>}
-    {['loading', 'camera', 'placing'].includes(state) && <div className="xr-message glass-panel" role="status"><p>{message}</p></div>}
+    {['loading', 'camera', 'placing'].includes(state) && <div className={`xr-message glass-panel${state === 'placing' ? ' is-scanning' : ''}`} role="status">
+      {state === 'placing' && <ScanLine aria-hidden="true" />}
+      <p>{message}</p>
+    </div>}
     {state === 'error' && <div className="xr-message glass-panel" role="alert"><p>{message}</p><Button className="play-button" onClick={() => void start(mode)}>Retry</Button><Button variant="ghost" onClick={() => void start('preview')}>Preview content</Button></div>}
     {active && <section className="playback-overlay xr-playback">
       {(mode === 'preview' || message) && <p className="xr-hint">{message || (mode === 'preview' ? 'Content preview · camera off' : '')}</p>}

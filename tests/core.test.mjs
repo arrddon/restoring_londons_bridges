@@ -20,6 +20,13 @@ test('all ten destinations resolve to their bridge and spot', () => {
   assert.equal(urls.size, 10);
 });
 
+test('each bridge is numbered 01 south to 05 north', () => {
+  for (const bridge of bridges) {
+    const southToNorth = [...bridge.spots].sort((a, b) => mapLocations[a.pinId].latitude - mapLocations[b.pinId].latitude);
+    assert.deepEqual(southToNorth.map(spot => spot.title.slice(0, 2)), ['01', '02', '03', '04', '05']);
+  }
+});
+
 test('Albert Bridge uses surveyed pins and starts at A04', () => {
   assert.deepEqual(mapLocations.A01, { latitude: 51.483198, longitude: -0.167068 });
   assert.deepEqual(mapLocations.A02, { latitude: 51.482253, longitude: -0.166610 });
@@ -36,11 +43,11 @@ test('Albert Bridge uses surveyed pins and starts at A04', () => {
 test('Hammersmith Bridge uses the supplied titles and surveyed coordinates', () => {
   const hammersmith = bridges.find(bridge => bridge.id === 'HammersmithBridge');
   assert.deepEqual(hammersmith.spots.map(spot => [spot.pinId, spot.title]), [
-    ['H01', 'The Pedestal Crack'],
-    ['H02', 'Harrods Furniture Depository'],
-    ['H03', 'Oxford Cambridge Boat Race'],
-    ['H04', "Bazalgette's London"],
-    ['H05', 'Coat of Arms'],
+    ['H01', '05. The Pedestal Crack'],
+    ['H02', '04. Harrods Furniture Depository'],
+    ['H03', '03. Oxford Cambridge Boat Race'],
+    ['H04', "02. Bazalgette's London"],
+    ['H05', '01. Coat of Arms'],
   ]);
   assert.deepEqual(mapLocations.H01, { latitude: 51.489214, longitude: -0.229270 });
   assert.deepEqual(mapLocations.H02, { latitude: 51.488915, longitude: -0.229597 });
