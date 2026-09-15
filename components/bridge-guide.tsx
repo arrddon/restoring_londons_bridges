@@ -13,9 +13,11 @@ const steps = [
 ];
 
 function GuideMap({ bridge }: { bridge: Bridge }) {
-  // Standard OSM raster images also remain visible in browser print output.
-  const zoom = 17;
-  const scale = 1.6;
+  // Fetch four times the source pixel density while preserving the original
+  // geographic crop. Raster tiles remain visible in browser print output.
+  const baseZoom = 17;
+  const zoom = 19;
+  const scale = 1.6 / 2 ** (zoom - baseZoom);
   const tileSize = 256;
   const worldSize = tileSize * 2 ** zoom;
   const world = (p: { latitude: number; longitude: number }) => {
