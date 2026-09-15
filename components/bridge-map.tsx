@@ -87,7 +87,7 @@ export default function BridgeMap({ bridge, completed, unlocked, qrSpotId }: { b
         const label = document.createElement('span');
         label.setAttribute('aria-hidden', 'true');
         button.append(label);
-        if (point.pinId === 'A04') {
+        if (point.pinId === 'A01') {
           wrapper.className = 'map-start-pin';
           const startLabel = document.createElement('span');
           startLabel.className = 'map-starting-point';

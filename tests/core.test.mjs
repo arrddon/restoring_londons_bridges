@@ -23,37 +23,40 @@ test('all ten destinations resolve to their bridge and spot', () => {
 test('each bridge is numbered 01 south to 05 north', () => {
   for (const bridge of bridges) {
     const southToNorth = [...bridge.spots].sort((a, b) => mapLocations[a.pinId].latitude - mapLocations[b.pinId].latitude);
+    const prefix = bridge.id === 'AlbertBridge' ? 'A' : 'H';
+    assert.deepEqual(southToNorth.map(spot => spot.pinId), [1, 2, 3, 4, 5].map(number => `${prefix}0${number}`));
     assert.deepEqual(southToNorth.map(spot => spot.title.slice(0, 2)), ['01', '02', '03', '04', '05']);
+    assert.deepEqual(southToNorth.map(spot => spot.destination), southToNorth.map(spot => `/${bridge.id}/${spot.pinId}`));
   }
 });
 
-test('Albert Bridge uses surveyed pins and starts at A04', () => {
-  assert.deepEqual(mapLocations.A01, { latitude: 51.483198, longitude: -0.167068 });
-  assert.deepEqual(mapLocations.A02, { latitude: 51.482253, longitude: -0.166610 });
-  assert.deepEqual(mapLocations.A03, { latitude: 51.481832, longitude: -0.166397 });
-  assert.deepEqual(mapLocations.A04, { latitude: 51.481308, longitude: -0.166309 });
-  assert.deepEqual(mapLocations.A05, { latitude: 51.482714, longitude: -0.166838 });
-  assert.equal(mapStartingPoints.AlbertBridge, mapLocations.A04);
-  const a04 = bridges.find(bridge => bridge.id === 'AlbertBridge').spots.find(spot => spot.pinId === 'A04');
-  assert.equal(a04.assetType, '3d');
-  assert.equal(a04.destination, '/AlbertBridge/A04');
-  assert.equal(a04.modelPath, 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789370699/A04_new_jiqjrc.glb');
+test('Albert Bridge uses surveyed pins and starts at southern A01', () => {
+  assert.deepEqual(mapLocations.A01, { latitude: 51.481308, longitude: -0.166309 });
+  assert.deepEqual(mapLocations.A02, { latitude: 51.481832, longitude: -0.166397 });
+  assert.deepEqual(mapLocations.A03, { latitude: 51.482253, longitude: -0.166610 });
+  assert.deepEqual(mapLocations.A04, { latitude: 51.482714, longitude: -0.166838 });
+  assert.deepEqual(mapLocations.A05, { latitude: 51.483198, longitude: -0.167068 });
+  assert.equal(mapStartingPoints.AlbertBridge, mapLocations.A01);
+  const a01 = bridges.find(bridge => bridge.id === 'AlbertBridge').spots.find(spot => spot.pinId === 'A01');
+  assert.equal(a01.assetType, '3d');
+  assert.equal(a01.destination, '/AlbertBridge/A01');
+  assert.equal(a01.modelPath, 'https://res.cloudinary.com/douz9wtb2/image/upload/v1789370699/A04_new_jiqjrc.glb');
 });
 
 test('Hammersmith Bridge uses the supplied titles and surveyed coordinates', () => {
   const hammersmith = bridges.find(bridge => bridge.id === 'HammersmithBridge');
   assert.deepEqual(hammersmith.spots.map(spot => [spot.pinId, spot.title]), [
-    ['H01', '05. The Pedestal Crack'],
-    ['H02', '04. Harrods Furniture Depository'],
+    ['H01', '01. Coat of Arms'],
+    ['H02', "02. Bazalgette's London"],
     ['H03', '03. Oxford Cambridge Boat Race'],
-    ['H04', "02. Bazalgette's London"],
-    ['H05', '01. Coat of Arms'],
+    ['H04', '04. Harrods Furniture Depository'],
+    ['H05', '05. The Pedestal Crack'],
   ]);
-  assert.deepEqual(mapLocations.H01, { latitude: 51.489214, longitude: -0.229270 });
-  assert.deepEqual(mapLocations.H02, { latitude: 51.488915, longitude: -0.229597 });
+  assert.deepEqual(mapLocations.H01, { latitude: 51.487487, longitude: -0.231072 });
+  assert.deepEqual(mapLocations.H02, { latitude: 51.487866, longitude: -0.230675 });
   assert.deepEqual(mapLocations.H03, { latitude: 51.488470, longitude: -0.230068 });
-  assert.deepEqual(mapLocations.H04, { latitude: 51.487866, longitude: -0.230675 });
-  assert.deepEqual(mapLocations.H05, { latitude: 51.487487, longitude: -0.231072 });
+  assert.deepEqual(mapLocations.H04, { latitude: 51.488915, longitude: -0.229597 });
+  assert.deepEqual(mapLocations.H05, { latitude: 51.489214, longitude: -0.229270 });
 });
 
 test('completion persists and never crosses bridges or spots', () => {

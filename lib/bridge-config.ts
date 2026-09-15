@@ -14,18 +14,18 @@ const positions = [{ x: .275, y: .235 }, { x: .40, y: .31 }, { x: .52, y: .38 },
 const albertPositions = [{ x: .405, y: .25 }, { x: .465, y: .375 }, { x: .525, y: .50 }, { x: .585, y: .625 }, { x: .645, y: .75 }];
 const content: Record<string, { title: string }[]> = {
   AlbertBridge: [
-    { title: '05. The Damaged Rocker' },
-    { title: '03. Bazalgette' },
-    { title: '02. Timber and Ashphalt' },
     { title: '01. Stop Marching Sign' },
+    { title: '02. Timber and Ashphalt' },
+    { title: '03. Bazalgette' },
     { title: '04. Lights on the Bridge' },
+    { title: '05. The Damaged Rocker' },
   ],
   HammersmithBridge: [
-    { title: '05. The Pedestal Crack' },
-    { title: '04. Harrods Furniture Depository' },
-    { title: '03. Oxford Cambridge Boat Race' },
-    { title: "02. Bazalgette's London" },
     { title: '01. Coat of Arms' },
+    { title: "02. Bazalgette's London" },
+    { title: '03. Oxford Cambridge Boat Race' },
+    { title: '04. Harrods Furniture Depository' },
+    { title: '05. The Pedestal Crack' },
   ],
 };
 export const bridges: Bridge[] = [
@@ -34,7 +34,9 @@ export const bridges: Bridge[] = [
 ].map(bridge => ({ ...bridge, spots: (bridge.id === 'AlbertBridge' ? albertPositions : positions).map((position, i) => ({
   id: `spot-${String(i + 1).padStart(2, '0')}`, bridgeId: bridge.id,
   pinId: `${bridge.id === 'AlbertBridge' ? 'A' : 'H'}${String(i + 1).padStart(2, '0')}`,
-  assetType: (i === 0 || i === 2 || (bridge.id === 'AlbertBridge' && i === 3) ? '3d' : i === 1 ? 'video' : 'image') as Spot['assetType'],
+  assetType: (bridge.id === 'AlbertBridge'
+    ? ['3d', '3d', 'video', 'image', '3d']
+    : ['image', 'image', '3d', 'video', '3d'])[i] as Spot['assetType'],
   sourceAssets: {
     model: null,
     audio: null,
@@ -47,20 +49,24 @@ export const bridges: Bridge[] = [
   // Public point URLs are encoded directly into the physical QR markers.
   destination: `/${bridge.id}/${bridge.id === 'AlbertBridge' ? 'A' : 'H'}${String(i + 1).padStart(2, '0')}`,
   modelPath: bridge.id === 'AlbertBridge' ? [
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788518406/A01_model_edited_fp20pa.glb', null,
+    'https://res.cloudinary.com/douz9wtb2/image/upload/v1789370699/A04_new_jiqjrc.glb',
     'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516011/A03_model_dlwovo.glb',
-    'https://res.cloudinary.com/douz9wtb2/image/upload/v1789370699/A04_new_jiqjrc.glb', null,
+    null, null,
+    'https://res.cloudinary.com/douz9wtb2/image/upload/v1788518406/A01_model_edited_fp20pa.glb',
   ][i] : null,
   audioPath: bridge.id === 'AlbertBridge' ? [
-    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516562/A01_audio_normalized_cuby8v.mp3', null,
-    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516558/A03_audio_normalized_fglgg5.mp3',
     'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516561/A04_audio_normalized_c8xjrc.mp3',
+    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516558/A03_audio_normalized_fglgg5.mp3',
+    null,
     'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516561/A05_audio_normalized_j4utxo.mp3',
+    'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516562/A01_audio_normalized_cuby8v.mp3',
   ][i] : null,
-  videoPath: bridge.id === 'AlbertBridge' && i === 1 ? 'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516032/A02_u2pcbc.mp4' : null,
-  imagePath: bridge.id === 'AlbertBridge' ? [null, null, null,
+  videoPath: bridge.id === 'AlbertBridge' && i === 2 ? 'https://res.cloudinary.com/douz9wtb2/video/upload/v1788516032/A02_u2pcbc.mp4' : null,
+  imagePath: bridge.id === 'AlbertBridge' ? [
     'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516012/A04_image_hxkco3.jpg',
+    null, null,
     'https://res.cloudinary.com/douz9wtb2/image/upload/v1788516004/A05_image_xorlon.jpg',
+    null,
   ][i] : null,
   modelSizeMeters: .8, videoWidthMeters: 1.2,
   scale: 1, rotation: [0, 0, 0] as [number, number, number],
