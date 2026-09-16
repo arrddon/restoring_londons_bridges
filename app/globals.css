@@ -204,12 +204,12 @@ button, input, select, textarea { font-family: inherit; }
 .field-qr-guide { container-type: inline-size; position: relative; width: 210mm; aspect-ratio: 210 / 297; margin: 0 auto; overflow: hidden; background: #fff; color: #111; box-shadow: 0 3px 20px #0001; break-inside: avoid; }
 .field-qr-guide header { position: absolute; top: 11cqw; left: 8.5cqw; right: 8.5cqw; }
 .field-qr-guide h1 { margin: 0; font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 6.6cqw; font-weight: 600; line-height: 1.05; letter-spacing: -.065em; white-space: nowrap; }
-.field-qr-guide header p, .field-qr-guide-caption { margin: 0; font-size: max(2.6cqw, 14px); font-weight: 600; line-height: 1.25; }
+.field-qr-guide header p, .field-qr-guide-caption { margin: 0; font-size: max(3cqw, 14px); font-weight: 600; line-height: 1.25; }
 .field-qr-guide header p { margin-top: 3cqw; }
 .field-qr-guide-code { position: absolute; top: 50%; left: 50%; width: 73cqw; transform: translate(-50%, -50%); }
 .field-qr-guide-code svg { display: block; width: 100%; height: auto; }
-.field-qr-guide-caption { position: absolute; top: calc(50% + 39cqw); left: 0; right: 0; text-align: center; }
-.field-qr-guide-watermark { position: absolute; right: 8cqw; bottom: 8cqw; width: 15cqw; height: 15cqw; object-fit: contain; }
+.field-qr-guide-caption { position: absolute; top: calc(50% + 41cqw); left: 0; right: 0; text-align: center; }
+.field-qr-guide-watermark { position: absolute; right: 7cqw; bottom: 6cqw; width: 18cqw; height: 18cqw; object-fit: contain; }
 .point-qr-grid .field-qr-guide { width: 100%; border: 1px solid #ddd; }
 @media screen and (max-width: 840px) { .field-qr-page { overflow-x: auto; padding: 12px; } .point-qr-sheet { padding: 20px; } }
 @media print {
