@@ -1,4 +1,10 @@
-# 8th Wall License
+# Restoring London's Bridges
+
+## GitHub repository
+
+This project's GitHub repository is https://github.com/arrddon/restoring_londons_bridges .
+
+## 8th Wall License
 
 This project uses the unmodified 8th Wall XR Engine binary, distributed under the [XR Engine License Agreement](https://8thwall.org/docs/open-source).
 

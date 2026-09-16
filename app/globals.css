@@ -49,6 +49,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset:
 .scan-qr-button.is-hidden { opacity: 0; visibility: hidden; transform: translate(-50%, 14px); pointer-events: none; transition: opacity .25s ease, transform .35s ease, visibility 0s .35s; }
 .map-leaving { opacity: 0; filter: blur(16px); transform: scale(1.065); pointer-events: none; }
 .experience-screen { background: #e6e6e3; animation: scene-arrive 600ms ease both; }
+.media-experience { background: #101010; display: flex; align-items: center; justify-content: center; }
+.media-asset { width: 100%; height: 100%; object-fit: contain; display: block; }
+.media-audio { position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(360px, calc(100% - 32px)); padding: 12px; border-radius: 16px; background: #ffffffe6; display: grid; gap: 6px; text-align: center; z-index: 2; }
+.media-audio audio { width: 100%; }
+.media-experience .ar-heading { z-index: 2; }
 .ar-scene { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 46%, #fafaf7, #e5e5e2 62%, #d4d5d1); }
 .ar-scene canvas, .ar-scene video { width: 100%; height: 100%; object-fit: cover; }
 .ar-heading { position: absolute; top: max(20px, env(safe-area-inset-top)); left: 24px; right: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }

@@ -1,5 +1,5 @@
-// Surveyed bridge coordinates, numbered 01 to 05 from south to north. Keep these
-// as the single source of truth for the interactive maps and printed guides.
+// Surveyed Albert Bridge coordinates. Keep these as the single source of truth for
+// both the interactive map and the printed guide.
 export const mapLocations: Record<string, { latitude: number; longitude: number }> = {
   A01: { latitude: 51.481308, longitude: -0.166309 },
   A02: { latitude: 51.481832, longitude: -0.166397 },

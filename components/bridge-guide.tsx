@@ -8,8 +8,8 @@ const steps = [
   ['SCAN TO BEGIN', 'Scan the QR code to open the experience.'],
   ['FOLLOW THE MAP', 'Walk to one of the marked points around the bridge.'],
   ['OPEN THE EXPERIENCE', 'Scan the QR code at the location to begin.'],
-  ['LOOK AROUND', 'Slowly move your phone and explore the space around you.'],
-  ['DISCOVER & LISTEN', 'Point your camera towards the object as it appears, and listen to its story.'],
+  ['EXPLORE THE CONTENT', 'For 3D points, scan your surroundings. Images and videos open on your screen.'],
+  ['DISCOVER & LISTEN', 'Explore the story and play the narration when available.'],
 ];
 
 function GuideMap({ bridge }: { bridge: Bridge }) {
@@ -67,7 +67,7 @@ export default function BridgeGuide({ bridge }: { bridge: Bridge }) {
   useEffect(() => { setUrl(`${window.location.origin}/${bridge.id}`); }, [bridge.id]);
   return <div className="guide-document">
     <article className="guide-sheet guide-front" aria-label="Guide 1: Experience instructions">
-      <header><div className="guide-kicker">{bridge.title.toUpperCase()}, LONDON</div><h1>RESTORING<br />LONDON’S<br />BRIDGES</h1><p className="guide-intro">An AR journey through the hidden structures<br />and stories of {bridge.title}.</p></header>
+      <header><div className="guide-kicker">{bridge.title.toUpperCase()}, LONDON</div><h1>RESTORING<br />LONDON’S<br />BRIDGES</h1><p className="guide-intro">An interactive journey through the hidden structures<br />and stories of {bridge.title}.</p></header>
       <section className="guide-instructions"><h2>HOW TO EXPLORE</h2><ol>{steps.map(([title, instruction], i) => <li key={title}><img src={`/guide/${i + 1}.png`} alt="" /><div><span className="guide-step-number">0{i + 1}</span><h3>{title}</h3><p>{instruction}</p></div></li>)}</ol></section>
       <footer className="guide-front-footer"><div><strong>BEGIN HERE</strong><p>Scan to open the map.</p><small>Turn over to explore the map →</small></div>{url && <QRCodeSVG value={url} size={96} marginSize={4} level="M" />}</footer>
     </article>

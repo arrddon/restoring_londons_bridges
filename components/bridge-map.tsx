@@ -138,8 +138,8 @@ export default function BridgeMap({ bridge, completed, unlocked, qrSpotId }: { b
       <Button variant="ghost" className="close-point icon-button" aria-label="Close selected point" onClick={() => { markers.current.find(m => m.id === selected)?.button.focus(); resetView.current(); }}><X /></Button>
       <div className="point-copy"><h2>{spot.title}</h2></div>
       <div className="point-actions">{qrSpotId === spot.id || unlocked.includes(spot.destination)
-        ? <Link className="enter-link" href={`${spot.destination}/ar`}>ENTER AR</Link>
-        : <Button className="scan-required-button" onClick={() => setScanning(true)}><ScanLine size={20} /> SCAN QR TO ENTER AR</Button>}
+        ? <Link className="enter-link" href={`${spot.destination}/ar`}>{spot.assetType === '3d' ? 'ENTER AR' : 'VIEW CONTENT'}</Link>
+        : <Button className="scan-required-button" onClick={() => setScanning(true)}><ScanLine size={20} /> SCAN QR TO {spot.assetType === '3d' ? 'ENTER AR' : 'VIEW CONTENT'}</Button>}
       </div>
     </section>}
   </section>;
