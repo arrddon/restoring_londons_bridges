@@ -58,7 +58,7 @@ function GuideMap({ bridge }: { bridge: Bridge }) {
       const onLeft = i % 2 === 0 && p.pinId !== 'H01';
       const gap = p.pinId === 'H02' ? 100 : 48;
       const qrX = onLeft ? Math.max(8, p.x - gap - 108) : p.x + gap;
-      const verticalShift = p.pinId === 'H04' ? 25 : p.pinId === 'H05' ? -25 : 0;
+      const verticalShift = p.pinId === 'H01' || p.pinId === 'H04' ? 25 : p.pinId === 'H05' ? -25 : 0;
       const qrY = p.y - 54 + verticalShift;
       return <g key={p.pinId}>
         <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
