@@ -9,7 +9,7 @@ export const mapLocations: Record<string, { latitude: number; longitude: number 
   H01: { latitude: 51.487487, longitude: -0.231072 },
   H02: { latitude: 51.487866, longitude: -0.230675 },
   H03: { latitude: 51.488470, longitude: -0.230068 },
-  H04: { latitude: 51.488915, longitude: -0.229597 },
+  H04: { latitude: 51.48885865352584, longitude: -0.22964610998178459 },
   H05: { latitude: 51.489214, longitude: -0.229270 },
 };
 
