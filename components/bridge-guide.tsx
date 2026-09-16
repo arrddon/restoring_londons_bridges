@@ -1,8 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import type { Bridge } from '@/lib/bridge-config';
 import { mapLocations, mapStartingPoints } from '@/lib/map-locations';
+import { publicPointUrl } from '@/lib/qr-route';
+
+const partnerLogos = ['riverside', 'royal-college', 'royal-academy', 'london-breeze', 'hyperactive', 'crackd', 'ukri', 'thames-festival', 'west-london'];
 
 const steps = [
   ['SCAN TO BEGIN', 'Scan the QR code to open the experience.'],
@@ -51,9 +53,12 @@ function GuideMap({ bridge }: { bridge: Bridge }) {
   const points = bridge.spots.map(point => ({ ...project(mapLocations[point.pinId]), pinId: point.pinId }));
   return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label={`OpenStreetMap of ${bridge.title} with five experience points. North is up.`}>
     <g className="guide-map-tiles">{tiles}</g>
-    {points.map(p => <g key={p.pinId}>
+    {points.map((p, i) => <g key={p.pinId}>
       <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
       <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{p.pinId.slice(1)}</text>
+      <rect x={p.x + 24} y={p.y - 35} width="76" height="76" fill="white" stroke="#111" strokeWidth="1" />
+      <QRCodeSVG x={p.x + 26} y={p.y - 33} width="72" height="72" size={72} marginSize={2}
+        value={publicPointUrl(bridge.spots[i].destination)} level="M" title={`${p.pinId} QR code`} />
     </g>)}
     {start && <>
       <path d={`M${start.x - 20} ${start.y} h-12`} stroke="#111" strokeWidth="1.5" />
@@ -63,18 +68,16 @@ function GuideMap({ bridge }: { bridge: Bridge }) {
   </svg>;
 }
 export default function BridgeGuide({ bridge }: { bridge: Bridge }) {
-  const [url, setUrl] = useState('');
-  useEffect(() => { setUrl(`${window.location.origin}/${bridge.id}`); }, [bridge.id]);
   return <div className="guide-document">
     <article className="guide-sheet guide-front" aria-label="Guide 1: Experience instructions">
-      <header><div className="guide-kicker">{bridge.title.toUpperCase()}, LONDON</div><h1>RESTORING<br />LONDON’S<br />BRIDGES</h1><p className="guide-intro">An interactive journey through the hidden structures<br />and stories of {bridge.title}.</p></header>
+      <header><div className="guide-kicker">{bridge.title.toUpperCase()}, LONDON</div><h1>restoringlondonsbridges.com</h1><p className="guide-intro">An interactive journey through the hidden structures<br />and stories of {bridge.title}.</p></header>
       <section className="guide-instructions"><h2>HOW TO EXPLORE</h2><ol>{steps.map(([title, instruction], i) => <li key={title}><img src={`/guide/${i + 1}.png`} alt="" /><div><span className="guide-step-number">0{i + 1}</span><h3>{title}</h3><p>{instruction}</p></div></li>)}</ol></section>
-      <footer className="guide-front-footer"><div><strong>BEGIN HERE</strong><p>Scan to open the map.</p><small>Turn over to explore the map →</small></div>{url && <QRCodeSVG value={url} size={96} marginSize={4} level="M" />}</footer>
+      <footer className="guide-front-footer" aria-label="Project partners">{partnerLogos.map(name => <img key={name} src={`/guide/logos/${name}.png`} alt={name.replaceAll('-', ' ')} />)}</footer>
     </article>
     <article className="guide-sheet guide-back" aria-label="Guide 2: Map and starting point">
-      <header><h2>EXPLORE THE BRIDGE</h2><p>{bridge.title}, London</p></header>
+      <header><h2>{bridge.title}</h2></header>
       <GuideMap bridge={bridge} />
-      <div className="guide-map-note"><p>At each point, look for the QR marker<br />to continue the experience.</p><small>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</small></div>
+      <div className="guide-map-note"><small>© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</small></div>
     </article>
   </div>;
 }

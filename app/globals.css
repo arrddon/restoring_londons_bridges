@@ -149,27 +149,24 @@ button, input, select, textarea { font-family: inherit; }
 .guide-document { background: #dedede; min-height: 100vh; padding: 24px; color: #111; }
 .guide-sheet { width: 210mm; height: 297mm; padding: 17mm 18mm 15mm; margin: 0 auto 24px; background: white; display: flex; flex-direction: column; box-shadow: 0 3px 20px #0001; overflow: hidden; }
 .guide-kicker { display: flex; justify-content: space-between; font-size: 9pt; font-weight: 600; letter-spacing: .08em; padding-bottom: 6mm; border-bottom: 1px solid #111; }
-.guide-sheet h1 { font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 39pt; line-height: .98; letter-spacing: -.045em; font-weight: 550; margin: 8mm 0 5mm; }
-.guide-intro { font-size: 12pt; line-height: 1.45; margin: 0; }
+.guide-sheet h1 { font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 28pt; line-height: 1.1; letter-spacing: -.055em; font-weight: 550; margin: 8mm 0 6mm; white-space: nowrap; }
+.guide-intro { font-size: 13pt; line-height: 1.45; margin: 0; }
 .guide-instructions { margin-top: 9mm; }
-.guide-instructions h2 { font-size: 10pt; letter-spacing: .12em; margin: 0 0 3mm; font-weight: 700; }
+.guide-instructions h2 { font-size: 11pt; letter-spacing: .12em; margin: 0 0 3mm; font-weight: 700; }
 .guide-instructions ol { margin: 0; padding: 0; list-style: none; }
 .guide-instructions li { display: grid; grid-template-columns: 26mm 1fr; gap: 6mm; align-items: center; min-height: 27mm; }
 .guide-instructions img { width: 24mm; height: 24mm; object-fit: contain; }
-.guide-step-number { font-size: 9pt; color: #555; font-weight: 600; }
-.guide-instructions h3 { font-size: 12pt; line-height: 1.2; margin: 1mm 0; font-weight: 600; }
-.guide-instructions p { font-size: 10.5pt; line-height: 1.35; margin: 0; max-width: 122mm; }
-.guide-front-footer { margin-top: auto; padding-top: 4mm; border-top: 1px solid #111; display: flex; justify-content: space-between; align-items: center; }
-.guide-front-footer strong { font-size: 10pt; letter-spacing: .06em; }
-.guide-front-footer p { margin: 1mm 0 4mm; font-size: 10pt; }
-.guide-front-footer small { font-size: 10pt; }
-.guide-front-footer svg { width: 25mm; height: 25mm; flex-shrink: 0; }
+.guide-step-number { font-size: 10pt; color: #555; font-weight: 600; }
+.guide-instructions h3 { font-size: 13pt; line-height: 1.2; margin: 1mm 0; font-weight: 600; }
+.guide-instructions p { font-size: 11.5pt; line-height: 1.35; margin: 0; max-width: 122mm; }
+.guide-front-footer { margin-top: auto; padding-top: 5mm; border-top: 1px solid #111; display: flex; justify-content: space-between; align-items: center; gap: 1mm; }
+.guide-front-footer img { width: 18mm; height: 17mm; object-fit: contain; }
 .guide-back { position: relative; padding: 0; }
 .guide-back header { position: absolute; z-index: 1; top: 16mm; left: 18mm; }
-.guide-back header h2 { font-size: 17pt; font-weight: 500; letter-spacing: .03em; margin: 0 0 2mm; }
+.guide-back header h2 { font-size: 19pt; font-weight: 500; letter-spacing: .03em; margin: 0; }
 .guide-back header p { font-size: 10pt; margin: 0; }
 .guide-map { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-.guide-map-note { position: absolute; bottom: 15mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; align-items: end; gap: 8mm; }
+.guide-map-note { position: absolute; bottom: 15mm; right: 18mm; display: flex; justify-content: flex-end; align-items: end; }
 .guide-map-note p { font-size: 11pt; line-height: 1.4; margin: 0; }
 .guide-map-note small { font-size: 8pt; line-height: 1.5; color: #555; text-align: right; }
 @media screen and (max-width: 840px) { .guide-document { padding: 12px; overflow-x: auto; } }
@@ -184,7 +181,7 @@ button, input, select, textarea { font-family: inherit; }
 .guide-map-tiles { filter: grayscale(1) contrast(.8) brightness(1.15); }
 .guide-back header, .guide-map-note { background: #fffffff0; padding: 4mm; }
 .guide-back header { left: 14mm; }
-.guide-map-note { left: 14mm; right: 14mm; }
+.guide-map-note { right: 14mm; }
 
 /* Map locations are plain colour-coded points. QR access controls the AR CTA. */
 .map-pin { --pin-color: #d9473f; }
