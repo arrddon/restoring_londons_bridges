@@ -53,17 +53,21 @@ function GuideMap({ bridge }: { bridge: Bridge }) {
   const points = bridge.spots.map(point => ({ ...project(mapLocations[point.pinId]), pinId: point.pinId }));
   return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label={`OpenStreetMap of ${bridge.title} with five experience points. North is up.`}>
     <g className="guide-map-tiles">{tiles}</g>
-    {points.map((p, i) => <g key={p.pinId}>
-      <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
-      <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{p.pinId.slice(1)}</text>
-      <rect x={p.x + 24} y={p.y - 41} width="88" height="88" fill="white" stroke="#111" strokeWidth="1" />
-      <QRCodeSVG x={p.x + 26} y={p.y - 39} width="84" height="84" size={84} marginSize={2}
-        value={publicPointUrl(bridge.spots[i].destination)} level="M" title={`${p.pinId} QR code`} />
-    </g>)}
+    {points.map((p, i) => {
+      const qrX = i % 2 === 0 ? p.x - 132 : p.x + 24;
+      const qrY = p.y - 54;
+      return <g key={p.pinId}>
+        <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
+        <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{p.pinId.slice(1)}</text>
+        <rect x={qrX} y={qrY} width="108" height="108" fill="white" stroke="#111" strokeWidth="1" />
+        <QRCodeSVG x={qrX + 2} y={qrY + 2} width="104" height="104" size={104} marginSize={2}
+          value={publicPointUrl(bridge.spots[i].destination)} level="M" title={`${p.pinId} QR code`} />
+      </g>;
+    })}
     {start && <>
-      <path d={`M${start.x - 20} ${start.y} h-12`} stroke="#111" strokeWidth="1.5" />
-      <rect x={start.x - 110} y={start.y - 16} width="78" height="32" rx="2" fill="white" stroke="#111" />
-      <text x={start.x - 71} y={start.y + 5} textAnchor="middle" fontSize="16" fontWeight="700">START</text>
+      <path d={`M${start.x + 20} ${start.y} h12`} stroke="#111" strokeWidth="1.5" />
+      <rect x={start.x + 32} y={start.y - 16} width="78" height="32" rx="2" fill="white" stroke="#111" />
+      <text x={start.x + 71} y={start.y + 5} textAnchor="middle" fontSize="16" fontWeight="700">START</text>
     </>}
   </svg>;
 }
