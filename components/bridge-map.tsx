@@ -59,14 +59,23 @@ export default function BridgeMap({ bridge, completed, unlocked, qrSpotId }: { b
       instance.touchZoomRotate.disableRotation();
       instance.addControl(new NavigationControl({ showCompass: false }), 'top-right');
       instance.addControl(new AttributionControl({ compact: false }), 'bottom-right');
+      const overviewOptions = () => {
+        const mobile = container.current && container.current.clientWidth <= 640;
+        return {
+          padding: mobile
+            ? { top: 72, bottom: 110, left: 24, right: 24 }
+            : { top: 120, bottom: 150, left: 70, right: 70 },
+          maxZoom: 17,
+        };
+      };
       const fit = () => {
-        instance.fitBounds(bounds, { padding: { top: 120, bottom: 150, left: 70, right: 70 }, maxZoom: 17, duration: 0 });
-        // Allow one zoom level of context beyond the initial bridge overview.
-        instance.setMinZoom(Math.max(11, instance.getZoom() - 1));
+        instance.fitBounds(bounds, { ...overviewOptions(), duration: 0 });
+        // Keep the full bridge overview as the furthest zoom-out level.
+        instance.setMinZoom(instance.getZoom());
       };
       resetView.current = () => {
         setSelected(undefined);
-        instance.fitBounds(bounds, { padding: { top: 120, bottom: 150, left: 70, right: 70 }, maxZoom: 17, duration: 650 });
+        instance.fitBounds(bounds, { ...overviewOptions(), duration: 650 });
       };
       instance.on('click', resetView.current);
       instance.on('load', () => {
