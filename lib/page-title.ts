@@ -2,6 +2,7 @@ type TitledSpot = { pinId: string; id: string; title: string; assetType?: '3d' |
 type TitledBridge = { id: string; title: string; spots: TitledSpot[] };
 
 export function pageTitle(path: string[], bridges: TitledBridge[]) {
+  if (path.length === 1 && path[0] === 'QRCodes') return "QR Codes — Restoring London's Bridges";
   const bridge = bridges.find(item => item.id === path[0]);
   if (!bridge) return "Restoring London's Bridges";
   if (path[1] === 'Guide') return `${bridge.title} — Audience Guide`;

@@ -61,7 +61,7 @@ export default function BridgeApp({ path }: { path: string[] }) {
   const { unlocked, storageError: qrStorageError } = useQRAccess(scannedSpot);
   if (bridge && fieldGuideSpot) return <FieldQRGuide bridge={bridge} spot={fieldGuideSpot} />;
   if (bridge && path.length === 2 && path[1] === 'Guide') return <BridgeGuide bridge={bridge} />;
-  if (bridge && path.length === 2 && path[1] === 'QRCodes') return <PointQRCodes bridge={bridge} />;
+  if ((path.length === 1 && path[0] === 'QRCodes') || (bridge && path.length === 2 && path[1] === 'QRCodes')) return <PointQRCodes />;
   const arRoute = path.length === 3 && path[2] === 'ar' && spot;
   const pointRoute = path.length === 2 && spot;
   const invalid = !bridge || path.length > 3 || (path.length > 1 && !pointRoute && !arRoute);

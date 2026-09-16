@@ -192,23 +192,31 @@ button, input, select, textarea { font-family: inherit; }
 .vector-point-overlay .point-copy { padding-right: 18px; }
 .vector-point-overlay .point-actions { margin-top: 18px; }
 
-.point-qr-sheet { min-height: 100vh; padding: 32px; background: #fff; color: #111; }
-.point-qr-sheet header { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; max-width: 1000px; margin: 0 auto 32px; }
-.point-qr-sheet h1 { margin: 0; }
-.point-qr-sheet > section { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1000px; margin: auto; }
-.point-qr-sheet article { padding: 24px; border: 1px solid #ccc; text-align: center; break-inside: avoid; }
-.point-qr-brand { margin: 0 0 20px; font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 29px; font-weight: 600; line-height: .9; letter-spacing: -.04em; text-transform: uppercase; }
-.point-qr-sheet article svg { width: 100%; height: auto; max-width: 240px; }
-.point-qr-sheet article h3 { margin: 16px 0 4px; font-size: 32px; }
-.point-qr-sheet article p { margin: 0 0 10px; }
-.point-qr-sheet article small { overflow-wrap: anywhere; }
-@media print { .point-qr-sheet { padding: 10mm; } .point-qr-sheet header a { display: none; } }
+.point-qr-sheet { min-height: 100vh; padding: 32px; background: #eee; color: #111; }
+.point-qr-sheet > header { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; max-width: 1100px; margin: 0 auto 32px; }
+.point-qr-sheet > header h1 { margin: 0; font-size: 30px; }
+.point-qr-sheet > section { max-width: 1100px; margin: 0 auto 40px; }
+.point-qr-sheet > section > h2 { margin: 0 0 16px; font-size: 22px; }
+.point-qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
 
-/* One minimal, full-size A4 marker per bridge-specific Guide-A01/H01 … A05/H05 route. */
-.field-qr-guide { width: 210mm; height: 297mm; margin: 0 auto; padding: 22mm 20mm 18mm; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: #fff; color: #111; }
-.field-qr-guide header { align-self: stretch; border-top: 1px solid #111; padding-top: 8mm; }
-.field-qr-guide h1 { margin: 0; font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 34pt; font-weight: 600; line-height: .96; letter-spacing: -.045em; }
-.field-qr-guide p { margin: 8mm 0 0; font-size: 13pt; font-weight: 600; letter-spacing: .08em; }
-.field-qr-guide > svg { width: 158mm; height: 158mm; flex: none; }
-@media screen and (max-width: 800px) { .field-qr-guide { transform-origin: top left; } }
-@media print { .field-qr-guide { margin: 0; break-after: page; } }
+/* The same A4 poster is used by all ten individual routes and the collection. */
+.field-qr-page { min-height: 100vh; padding: 24px; background: #dedede; }
+.field-qr-guide { container-type: inline-size; position: relative; width: 210mm; aspect-ratio: 210 / 297; margin: 0 auto; overflow: hidden; background: #fff; color: #111; box-shadow: 0 3px 20px #0001; break-inside: avoid; }
+.field-qr-guide header { position: absolute; top: 11cqw; left: 8.5cqw; right: 8.5cqw; }
+.field-qr-guide h1 { margin: 0; font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 6.6cqw; font-weight: 600; line-height: 1.05; letter-spacing: -.065em; white-space: nowrap; }
+.field-qr-guide header p, .field-qr-guide-caption { margin: 0; font-size: max(2.6cqw, 14px); font-weight: 600; line-height: 1.25; }
+.field-qr-guide header p { margin-top: 3cqw; }
+.field-qr-guide-code { position: absolute; top: 50%; left: 50%; width: 73cqw; transform: translate(-50%, -50%); }
+.field-qr-guide-code svg { display: block; width: 100%; height: auto; }
+.field-qr-guide-caption { position: absolute; top: calc(50% + 39cqw); left: 0; right: 0; text-align: center; }
+.field-qr-guide-watermark { position: absolute; right: 8cqw; bottom: 8cqw; width: 15cqw; height: 15cqw; object-fit: contain; }
+.point-qr-grid .field-qr-guide { width: 100%; border: 1px solid #ddd; }
+@media screen and (max-width: 840px) { .field-qr-page { overflow-x: auto; padding: 12px; } .point-qr-sheet { padding: 20px; } }
+@media print {
+  .field-qr-page, .point-qr-sheet { padding: 0; background: #fff; }
+  .point-qr-sheet > header, .point-qr-sheet > section > h2 { display: none; }
+  .point-qr-sheet > section { max-width: none; margin: 0; }
+  .point-qr-grid { display: block; }
+  .field-qr-guide, .point-qr-grid .field-qr-guide { width: 210mm; height: 297mm; margin: 0; border: 0; box-shadow: none; break-after: page; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .field-qr-page .field-qr-guide, .point-qr-sheet > section:last-child .field-qr-guide:last-child { break-after: auto; }
+}

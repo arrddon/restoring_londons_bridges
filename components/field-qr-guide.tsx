@@ -1,14 +1,6 @@
-'use client';
-import { QRCodeSVG } from 'qrcode.react';
 import type { Bridge, Spot } from '@/lib/bridge-config';
-import { publicPointUrl } from '@/lib/qr-route';
+import QRPoster from '@/components/qr-poster';
 
 export default function FieldQRGuide({ bridge, spot }: { bridge: Bridge; spot: Spot }) {
-  return <main className="field-qr-guide" aria-label={`${spot.pinId} field QR guide`}>
-    <header>
-      <h1>RESTORING<br />LONDON’S<br />BRIDGES</h1>
-      <p>{bridge.title.toUpperCase()} · {spot.title.toUpperCase()}</p>
-    </header>
-    <QRCodeSVG value={publicPointUrl(spot.destination)} size={620} marginSize={4} level="H" title={`${spot.pinId} QR code`} />
-  </main>;
+  return <main className="field-qr-page"><QRPoster bridge={bridge} spot={spot} /></main>;
 }

@@ -1,18 +1,14 @@
 'use client';
 import Link from 'next/link';
-import { QRCodeSVG } from 'qrcode.react';
-import type { Bridge } from '@/lib/bridge-config';
-import { publicPointUrl } from '@/lib/qr-route';
+import { bridges } from '@/lib/bridge-config';
+import QRPoster from '@/components/qr-poster';
 
-export default function PointQRCodes({ bridge }: { bridge: Bridge }) {
+export default function PointQRCodes() {
   return <main className="point-qr-sheet">
-    <header><h1>{bridge.title} QR Codes</h1><Link href={`/${bridge.id}`}>Return to map</Link></header>
-    <section>{bridge.spots.map(spot => {
-      return <article key={spot.pinId}>
-        <h2 className="point-qr-brand">RESTORING<br />LONDON’S<br />BRIDGES</h2>
-        <QRCodeSVG value={publicPointUrl(spot.destination)} size={240} marginSize={4} level="H" title={`${spot.pinId} QR code`} />
-        <h3>{spot.pinId}</h3><p>{spot.title}</p>
-      </article>;
-    })}</section>
+    <header><h1>QR Codes</h1><Link href="/AlbertBridge">Return to map</Link></header>
+    {bridges.map(bridge => <section key={bridge.id} aria-label={`${bridge.title} QR posters`}>
+      <h2>{bridge.title}</h2>
+      <div className="point-qr-grid">{bridge.spots.map(spot => <QRPoster key={spot.pinId} bridge={bridge} spot={spot} />)}</div>
+    </section>)}
   </main>;
 }
