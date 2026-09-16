@@ -54,9 +54,12 @@ function GuideMap({ bridge }: { bridge: Bridge }) {
   return <svg className="guide-map" viewBox="0 0 560 792" role="img" aria-label={`OpenStreetMap of ${bridge.title} with five experience points. North is up.`}>
     <g className="guide-map-tiles">{tiles}</g>
     {points.map((p, i) => {
-      // Leave a wider clear strip along the bridge; keep edge markers on the page.
-      const qrX = i % 2 === 0 ? Math.max(8, p.x - 156) : p.x + 48;
-      const qrY = p.y - 54;
+      // Keep the QR cards clear of the bridge and tune the Hammersmith ends.
+      const onLeft = i % 2 === 0 && p.pinId !== 'H01';
+      const gap = p.pinId === 'H02' ? 100 : 48;
+      const qrX = onLeft ? Math.max(8, p.x - gap - 108) : p.x + gap;
+      const verticalShift = p.pinId === 'H04' ? 25 : p.pinId === 'H05' ? -25 : 0;
+      const qrY = p.y - 54 + verticalShift;
       return <g key={p.pinId}>
         <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
         <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{p.pinId.slice(1)}</text>
