@@ -56,8 +56,8 @@ function GuideMap({ bridge }: { bridge: Bridge }) {
     {points.map((p, i) => <g key={p.pinId}>
       <circle cx={p.x} cy={p.y} r="18" fill="white" stroke="#111" strokeWidth="1.2" />
       <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14" fontWeight="700">{p.pinId.slice(1)}</text>
-      <rect x={p.x + 24} y={p.y - 35} width="76" height="76" fill="white" stroke="#111" strokeWidth="1" />
-      <QRCodeSVG x={p.x + 26} y={p.y - 33} width="72" height="72" size={72} marginSize={2}
+      <rect x={p.x + 24} y={p.y - 41} width="88" height="88" fill="white" stroke="#111" strokeWidth="1" />
+      <QRCodeSVG x={p.x + 26} y={p.y - 39} width="84" height="84" size={84} marginSize={2}
         value={publicPointUrl(bridge.spots[i].destination)} level="M" title={`${p.pinId} QR code`} />
     </g>)}
     {start && <>

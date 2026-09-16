@@ -149,9 +149,9 @@ button, input, select, textarea { font-family: inherit; }
 .guide-document { background: #dedede; min-height: 100vh; padding: 24px; color: #111; }
 .guide-sheet { width: 210mm; height: 297mm; padding: 17mm 18mm 15mm; margin: 0 auto 24px; background: white; display: flex; flex-direction: column; box-shadow: 0 3px 20px #0001; overflow: hidden; }
 .guide-kicker { display: flex; justify-content: space-between; font-size: 9pt; font-weight: 600; letter-spacing: .08em; padding-bottom: 6mm; border-bottom: 1px solid #111; }
-.guide-sheet h1 { font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 28pt; line-height: 1.1; letter-spacing: -.055em; font-weight: 550; margin: 8mm 0 6mm; white-space: nowrap; }
+.guide-sheet h1 { font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 31pt; line-height: 1.1; letter-spacing: -.065em; font-weight: 550; margin: 8mm 0 6mm; white-space: nowrap; }
 .guide-intro { font-size: 13pt; line-height: 1.45; margin: 0; }
-.guide-instructions { margin-top: 9mm; }
+.guide-instructions { margin-top: 14mm; }
 .guide-instructions h2 { font-size: 11pt; letter-spacing: .12em; margin: 0 0 3mm; font-weight: 700; }
 .guide-instructions ol { margin: 0; padding: 0; list-style: none; }
 .guide-instructions li { display: grid; grid-template-columns: 26mm 1fr; gap: 6mm; align-items: center; min-height: 27mm; }
@@ -163,7 +163,7 @@ button, input, select, textarea { font-family: inherit; }
 .guide-front-footer img { width: 18mm; height: 17mm; object-fit: contain; }
 .guide-back { position: relative; padding: 0; }
 .guide-back header { position: absolute; z-index: 1; top: 16mm; left: 18mm; }
-.guide-back header h2 { font-size: 19pt; font-weight: 500; letter-spacing: .03em; margin: 0; }
+.guide-back header h2 { font-family: "Libre Bodoni", Bodoni MT, serif; font-size: 23pt; font-weight: 700; letter-spacing: -.025em; margin: 0; }
 .guide-back header p { font-size: 10pt; margin: 0; }
 .guide-map { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .guide-map-note { position: absolute; bottom: 15mm; right: 18mm; display: flex; justify-content: flex-end; align-items: end; }
