@@ -16,7 +16,7 @@ type PointData = { title: string; assetType: Spot['assetType']; model?: string; 
 const data: Record<string, PointData[]> = {
   AlbertBridge: [
     { title: 'Stop Marching Sign', assetType: '3d', model: model('v1789592434', 'A01_model_fkn5kn'), audio: audio('v1789592438', 'A01_audio_lydbp1') },
-    { title: 'Timber and Ashphalt', assetType: '3d', model: model('v1789592447', 'A02_model_naxncr'), audio: audio('v1789592440', 'A02_audio_f4tv3w') },
+    { title: 'Timber and Ashphalt', assetType: '3d', model: model('v1789675115', 'A02_model_final_mh8xv7'), audio: audio('v1789592440', 'A02_audio_f4tv3w') },
     { title: 'Bazalgette', assetType: 'image', image: image('v1789592432', 'A03_image_aoyiei'), audio: audio('v1789592686', 'A03_audio_mpfnsc') },
     { title: 'Lights on the Bridge', assetType: 'image', image: image('v1789592433', 'A04_image_yvykoy'), audio: audio('v1789592437', 'A04_audio_k2ouns') },
     { title: 'The Damaged Rocker', assetType: '3d', model: model('v1789592445', 'A05_model_gvm0ih'), audio: audio('v1789592434', 'A05_audio_htf0mi') },
